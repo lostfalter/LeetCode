@@ -1,0 +1,126 @@
+Given an array of words and a length L, format the text such that each line has exactly L characters and is fully (left and right) justified.
+
+You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly L characters.
+
+Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
+
+For the last line of text, it should be left justified and no extra space is inserted between words.
+
+For example,
+words: ["This", "is", "an", "example", "of", "text", "justification."]
+L: 16.
+
+Return the formatted lines as:
+[
+   "This    is    an",
+   "example  of text",
+   "justification.  "
+]
+Note: Each word is guaranteed not to exceed L in length.
+
+click to show corner cases.
+
+Corner Cases:
+A line other than the last line might contain only one word. What should you do in this case?
+In this case, that line should be left-justified.
+
+文字对齐，使得每一行有L个字符，并且有尽可能多的单词，单词之间可以有无限空格。
+每个单词保证不超过L个字符。
+
+注意不要忘了最后一行。
+
+vector<string> String::fullJustify(vector<string>& words, int L)
+{
+	vector<string> result;
+	if (words.size() == 0 || L == 0)
+	{
+		result.push_back("");
+		return result;
+	}
+
+	vector<string> row;
+	int index = 0;
+	int len = words.size();
+
+	int wordLen = 0;
+	while (index < len)
+	{
+		if (row.size() + words[index].length() + wordLen <= L)
+		{
+			wordLen += words[index].length();
+			row.push_back(words[index]);
+			
+			index++;
+		}
+		else
+		{
+			int wordCount = row.size();
+			
+			
+			string newStr;
+			if (wordCount == 1)
+			{
+				newStr.append(row[0]);
+				for (int i = 0; i < L - wordLen; i++)
+					newStr.append(" ");
+			}
+			else
+			{
+				int aveBlank = (L - wordLen) / (wordCount - 1);
+				int additionBlank = (L - wordLen) % (wordCount - 1);
+				int blankCount;
+				
+				for (int i = 0; i < wordCount - 1; i++)
+				{
+					newStr.append(row[i]);
+					blankCount = aveBlank;
+					if (additionBlank)
+					{
+						blankCount++;
+						additionBlank--;
+					}
+					for (int j = 0; j < blankCount; j++)
+						newStr.append(" ");
+				}
+				newStr.append(row[wordCount - 1]);
+			}
+			result.push_back(newStr);
+			row.clear();
+			wordLen = 0;
+		}
+	}
+	if (!row.empty())
+	{
+		int wordCount = row.size();
+		int wordLen = 0;
+		for (int i = 0; i < wordCount; i++)
+		{
+			wordLen += row[i].length();
+		}
+
+		string newStr;
+		if (wordCount == 1)
+		{
+			newStr.append(row[0]);
+			for (int i = 0; i < L - wordLen; i++)
+				newStr.append(" ");
+		}
+		else
+		{
+			
+			for (int i = 0; i < wordCount - 1; i++)
+			{
+				newStr.append(row[i]);
+				
+				newStr.append(" ");
+			}
+			newStr.append(row[wordCount - 1]);
+			for (int i = wordLen + wordCount - 1; i < L; i++)
+				newStr.append(" ");
+		}
+		result.push_back(newStr);
+		row.clear();
+	}
+	return result;
+}
+

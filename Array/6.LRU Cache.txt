@@ -1,0 +1,110 @@
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and set.
+
+get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
+set(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
+
+实现一个LRU缓存，有读取和存储功能。
+之前遇到过，LRU应该用链表来实现，各个存储块用链表串起来，同时使用哈希表指向链表块。
+
+从测试用例来看，set，get操作都会将存储块激活，放到队列最前面。
+
+struct DoublyLinkNode
+{
+	int key, val;
+	DoublyLinkNode* pre;
+	DoublyLinkNode* next;
+};
+class LRUCache
+{
+public:
+	LRUCache(int capacity);
+
+	int get(int key);
+
+	void set(int key, int value);
+private:
+	int capacity;
+	map<int, DoublyLinkNode*> indexTable;
+	DoublyLinkNode* first;
+	DoublyLinkNode* last;
+	void active(DoublyLinkNode* node);
+};
+
+
+
+LRUCache::LRUCache(int capacity)
+{
+	this->capacity = capacity;
+	first = new DoublyLinkNode;
+	last = new DoublyLinkNode;
+	first->next = last;
+	last->pre = first;
+}
+
+int LRUCache::get(int key)
+{
+	if (indexTable.find(key) == indexTable.end())
+		return -1;
+	DoublyLinkNode* node = indexTable[key];
+
+	active(node);
+	return node->val;
+
+}
+
+void LRUCache::set(int key, int value)
+{
+	DoublyLinkNode* node;
+	if (indexTable.find(key) == indexTable.end())
+	{
+
+		if (indexTable.size() >= capacity)
+		{
+			node = last->pre;
+
+			indexTable.erase(indexTable.find(node->key));
+			node->key = key;
+			node->val = value;
+			
+			indexTable[key] = node;
+
+			active(node);
+			
+
+		}
+		else
+		{
+			node = new DoublyLinkNode;
+			node->key = key;
+			node->val = value;
+			
+			node->pre = first;
+			node->next = first->next;
+			first->next->pre = node;
+			first->next = node;
+
+			indexTable[key] = node;
+
+		}
+	}
+	else
+	{
+		node = indexTable[key];
+		node->val = value;
+
+		active(node);
+	}
+}
+void LRUCache::active(DoublyLinkNode* node)
+{
+	if (first->next != node)
+	{
+		node->pre->next = node->next;
+		node->next->pre = node->pre;
+
+		node->next = first->next;
+		node->pre = first;
+		first->next->pre = node;
+		first->next = node;
+	}
+}

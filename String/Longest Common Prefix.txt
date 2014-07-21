@@ -1,0 +1,40 @@
+Write a function to find the longest common prefix string amongst an array of strings.
+
+寻找多个字符串的最长公共前缀。
+
+string String::longestCommonPrefix(vector<string>& strs)
+{
+	string common;
+	if (strs.size() == 0)
+		return common;
+
+	int index = 0;
+	int maxLen = INT_MAX;
+	for (auto it : strs)
+	{
+		if (it.length() < maxLen)
+			maxLen = it.length();
+	}
+
+	while (index < maxLen)
+	{
+		char c = strs[0][index];
+		bool flag = true;
+		for (auto it : strs)
+		{
+			if (it[index] != c)
+			{
+				flag = false;
+				break;
+			}
+		}
+		if (flag)
+			common.push_back(c);
+		else
+			break;
+
+		index++;
+	}
+
+	return common;
+}

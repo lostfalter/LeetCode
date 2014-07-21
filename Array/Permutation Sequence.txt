@@ -1,0 +1,55 @@
+The set [1,2,3,…,n] contains a total of n! unique permutations.
+
+By listing and labeling all of the permutations in order,
+We get the following sequence (ie, for n = 3):
+
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+Given n and k, return the kth permutation sequence.
+
+Note: Given n will be between 1 and 9 inclusive.
+
+输出第K个全排列。
+
+我之前还想输出前K个排列。
+结果可以直接求出。
+可以搜索康托展开。
+
+代码中存储数字可能不用visited比较好，用set之类的速度应该更快。不过N是1到9，差别也不会很大，最大也就循环81次。
+
+string Solution::getPermutation(int n, int k)
+{
+	string result;
+
+	vector<int> factorial(n);
+	factorial[0] = 1;
+	for (int i = 1; i < n; i++)
+		factorial[i] = factorial[i - 1] * i;
+
+	k--;
+	
+	vector<int> num(n);
+
+
+
+	for (int i = n - 1; i >= 0; i--)
+	{
+		int temp = k / factorial[i];
+		int index = temp;
+		for (int j = 0; j <= index; j++)
+		{
+			if (num[j])
+				index++;
+		}
+		num[index] = 1;
+
+		result.push_back(index + '1');
+		
+		k -= temp * factorial[i];
+	}
+	return result;
+}

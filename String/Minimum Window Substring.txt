@@ -1,0 +1,72 @@
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+For example,
+S = "ADOBECODEBANC"
+T = "ABC"
+Minimum window is "BANC".
+
+Note:
+If there is no such window in S that covers all characters in T, return the emtpy string "".
+
+If there are multiple such windows, you are guaranteed that there will always be only one unique minimum window in S.
+
+这种扫描的方式记一下比较好。。。
+
+string String::minWindow(string S, string T)
+{
+	int len = S.length();
+	int tLen = T.length();
+	if (len < tLen || len == 0)
+		return "";
+
+	const int ASCII_MAX = 256;
+	vector<int> expectedCount(ASCII_MAX);
+	vector<int> appearedCount(ASCII_MAX);
+
+	int startIndex = 0;
+	int appeared = 0;
+	
+	int minW = INT_MAX;
+	int minStart;
+
+	for (int i = 0; i < tLen; i++)
+		expectedCount[T[i]]++;
+
+	for (int i = 0; i < len; i++)
+	{
+		if (expectedCount[S[i]] > 0)
+		{
+			appearedCount[S[i]]++;
+			if (appearedCount[S[i]] <= expectedCount[S[i]])
+				appeared++;
+		}
+
+		if (appeared == tLen)
+		{
+			
+			while (expectedCount[S[startIndex]] == 0 ||
+				   appearedCount[S[startIndex]] > expectedCount[S[startIndex]])
+			{
+				appearedCount[S[startIndex]]--;
+				startIndex++;
+			}
+			
+			if (i - startIndex + 1 < minW)
+			{
+				minW = i - startIndex + 1;
+				minStart = startIndex;
+			}
+
+			appearedCount[S[startIndex]]--;
+			startIndex++;
+			appeared--;
+		}
+
+
+	}
+	
+	if (minW == INT_MAX)
+		return "";
+	else
+		return S.substr(minStart, minW);
+}

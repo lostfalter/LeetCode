@@ -1,0 +1,96 @@
+原题
+Given an input string, reverse the string word by word.
+
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+
+
+Clarification:
+What constitutes a word?
+A sequence of non-space characters constitutes a word.
+Could the input string contain leading or trailing spaces?
+Yes. However, your reversed string should not contain leading or trailing spaces.
+How about multiple spaces between two words?
+Reduce them to a single space in the reversed string.
+
+倒转一个句子中的单词，并且消除其中多余的空格
+
+我的做法是先消除句子中多余的空格，然后倒转每个单词，最后倒转整个句子。
+
+void Solution::reverseWords(string &s)
+{
+	int len = s.length();
+	if (len == 0)
+		return;
+
+
+	//先消除原字符串中的多余空格
+	//cout << "原字符串:" << endl;
+	//cout << s << endl;
+
+	int blankOffset = 0;
+	bool preBlank = true;
+	bool haveLetter = false;
+	for (int i = 0; i < len; i++)
+	{
+		if (s[i] == ' ')
+		{
+			if (preBlank)
+				blankOffset++;
+			else
+			{
+				s[i - blankOffset] = ' ';
+				preBlank = true;
+			}
+		}
+		else
+		{
+			haveLetter = true;
+			s[i - blankOffset] = s[i];
+			preBlank = false;
+		}
+	}
+	
+	if (preBlank && haveLetter)
+		blankOffset++;
+	s.erase(len - blankOffset, blankOffset);
+
+	len -= blankOffset;
+
+	//cout << "消除空格后字符串:" << endl;
+
+	//cout << s << endl;
+
+	for (int i = 0; i < len; i++)
+	{
+		if (s[i] != ' ')
+		{
+			int j = i;
+			while (j < len && s[j] != ' ')
+				j++;
+
+			reverse(&s[i], j - i);
+			i = j;
+		}
+	}
+
+	reverse(&s[0], len);
+	//cout << "倒转后字符串:" << endl;
+	//cout << s << endl;
+
+}
+void Solution::reverse(char* tempS, int len)
+{
+	int start = 0;
+	int end = len - 1;
+	char temp;
+	while (start < end)
+	{
+		temp = tempS[start];
+		tempS[start] = tempS[end];
+		tempS[end] = temp;
+		start++;
+		end--;
+	}
+}

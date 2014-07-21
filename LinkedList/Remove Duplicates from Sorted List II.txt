@@ -1,0 +1,49 @@
+Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
+
+For example,
+Given 1->2->3->3->4->4->5, return 1->2->5.
+Given 1->1->1->2->3, return 2->3.
+
+删除所有有重复值的节点。
+
+ListNode* LinkedList::deleteDuplicates2(ListNode* head)
+{
+	if (head == NULL || head->next == NULL)
+		return head;
+
+	ListNode* fakeHead = new ListNode(head->val - 1);
+	fakeHead->next = head;
+	ListNode* pre = fakeHead;
+	ListNode* p = head;
+	ListNode* temp = NULL;
+	while (p->next)
+	{
+		if (p->next->val == p->val)
+		{
+			while (p->next && p->next->val == p->val)
+			{
+				temp = p->next;
+				p->next = temp->next;
+				delete temp;
+			}
+			if (p->next == NULL)
+			{
+				pre->next = NULL;
+				delete p;
+				break;
+			}
+			temp = p;
+			p = p->next;
+			pre->next = p;
+			delete temp;
+		}
+		else
+		{
+			pre = p;
+			p = p->next;
+		}
+	}
+	head = fakeHead->next;
+	delete fakeHead;
+	return head;
+}

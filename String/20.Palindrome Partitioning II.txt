@@ -1,0 +1,10 @@
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return the minimum cuts needed for a palindrome partitioning of s.
+
+For example, given s = "aab",
+Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
+
+返回字符串的最小回文分割。
+这个应该比前一个的回文分割运算量小，是一个动归问题。
+

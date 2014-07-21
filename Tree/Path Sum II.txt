@@ -1,0 +1,88 @@
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+For example:
+Given the below binary tree and sum = 22,
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+return
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+
+深度遍历即可。
+
+vector<vector<int>> BinaryTree::pathSum(TreeNode* root, int sum)
+{
+	vector<vector<int>> result;
+	if (root == NULL)
+		return result;
+
+
+	TreeNode* p = NULL;
+	vector<TreeNode*> path;
+	stack<int> direct;
+
+
+	path.push_back(root);
+	direct.push(0);
+	while (!path.empty())
+	{
+		p = path.back();
+		if (direct.top() > 1)
+		{
+			if (p->left == NULL && p->right == NULL)
+			{
+				int temp = 0;
+				for (int i = 0; i < path.size(); i++)
+				{
+					temp += path[i]->val;
+				}
+				if (temp == sum)
+				{
+					vector<int> tempPath;
+					for (auto it : path)
+						tempPath.push_back(it->val);
+					result.push_back(tempPath);
+				}
+			}
+			direct.pop();
+			path.pop_back();
+			if (!path.empty())
+				direct.top()++;
+			continue;
+		}
+
+		if (direct.top() == 0)
+		{
+			if (p->left)
+			{
+				path.push_back(p->left);
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+		else
+		{
+			if (p->right)
+			{
+				path.push_back(p->right);
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+
+	}
+	return result;
+}

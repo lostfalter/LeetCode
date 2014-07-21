@@ -1,0 +1,30 @@
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+confused what "{1,#,2,3}" means? > read more on how binary tree is serialized on OJ.
+
+判断一棵树是否是二叉搜索树。递归判断两颗子树是否是二叉搜索树，应该不错。
+
+bool BinaryTree::isValidBST(TreeNode* root)
+{
+	if (root == NULL)
+		return true;
+
+	return isBST(root, INT_MIN, INT_MAX);
+}
+
+bool BinaryTree::isBST(TreeNode* root, int min, int max)
+{
+	if (root == NULL)
+		return true;
+
+	if (root->val >= max || root->val <= min)
+		return false;
+
+	return isBST(root->left, min, root->val) && isBST(root->right, root->val, max);
+}
+

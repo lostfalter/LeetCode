@@ -1,0 +1,139 @@
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing all ones and return its area.
+
+找到矩阵中包含所有1的最大矩阵。
+
+原来题目我理解错了，是找到只包含1的最大矩阵。。。
+问题好像变得难了很多，如果是我原来理解的，只要扫描一遍即可，现在的算法肯定更加复杂。
+
+我的算法挺直接暴力的，不过还是通过了。
+
+
+int Matrix::maximalRectangle(vector<vector<char>>& matrix)
+{
+	int m = matrix.size();
+	if (m == 0)
+		return 0;
+	int n = matrix[0].size();
+
+	vector<vector<int>> maxOne;
+	for (int i = 0; i < m; i++)
+	{
+		vector<int> row(n);
+		maxOne.push_back(row);
+	}
+	
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = n - 1; j >= 0; j--)
+		{
+			if (matrix[i][j] == '1')
+			{
+				if (j < n - 1 && maxOne[i][j + 1] > 0)
+					maxOne[i][j] = maxOne[i][j + 1] + 1;
+				else
+					maxOne[i][j] = 1;
+			}
+		}
+	}
+
+	int finalMax = 0;
+	int maxArea;
+	int area;
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (maxOne[i][j])
+			{
+				maxArea = maxOne[i][j];
+				int index = i + 1;
+				int min = maxOne[i][j];
+				while (index < m && maxOne[index][j])
+				{
+					if (maxOne[index][j] < min)
+						min = maxOne[index][j];
+					area = min * (index - i + 1);
+					if (area > maxArea)
+						maxArea = area;
+					index++;
+				}
+				if (maxArea > finalMax)
+					finalMax = maxArea;
+			}
+		}
+	}
+
+	return finalMax;
+}
+
+
+不过这题总是感觉和histogram面积那题很像，是可以转换成那道题的，我现在的复杂度是o（m*n*n），优化之后应该是0（m*n）。
+试着写一下。
+
+理论实践复杂度是下降了，不过好像实际运行时间更长了。。。
+
+int Matrix::maximalRectangle(vector<vector<char>>& matrix)
+{
+	int m = matrix.size();
+	if (m == 0)
+		return 0;
+	int n = matrix[0].size();
+
+	vector<vector<int>> maxOne;
+	for (int i = 0; i < m; i++)
+	{
+		vector<int> row(n);
+		maxOne.push_back(row);
+	}
+	
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = n - 1; j >= 0; j--)
+		{
+			if (matrix[i][j] == '1')
+			{
+				if (j < n - 1 && maxOne[i][j + 1] > 0)
+					maxOne[i][j] = maxOne[i][j + 1] + 1;
+				else
+					maxOne[i][j] = 1;
+			}
+		}
+	}
+
+	int maxArea = 0;
+	int area;
+	int smallBarIndex;
+	
+	for (int j = 0; j < n; j++)
+	{
+		int index = 0;
+		stack<int> s;
+		while (index < m)
+		{
+			if (s.empty() || maxOne[index][j] >= maxOne[s.top()][j])
+			{
+				s.push(index++);
+			}
+			else
+			{
+				smallBarIndex = s.top();
+				s.pop();
+				area = maxOne[smallBarIndex][j] * (s.empty() ? index : (index - s.top() - 1));
+				if (area > maxArea)
+					maxArea = area;
+			}
+		}
+
+		while (!s.empty())
+		{
+			smallBarIndex = s.top();
+			s.pop();
+			area = maxOne[smallBarIndex][j] * (s.empty() ? index : (index - s.top() - 1));
+			if (area > maxArea)
+				maxArea = area;
+		}
+	}
+
+	return maxArea;
+}
+

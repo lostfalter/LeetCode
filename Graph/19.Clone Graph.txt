@@ -1,0 +1,115 @@
+Clone an undirected graph. Each node in the graph contains a label and a list of its neighbors.
+
+
+OJ's undirected graph serialization:
+Nodes are labeled uniquely.
+
+We use # as a separator for each node, and , as a separator for node label and each neighbor of the node.
+As an example, consider the serialized graph {0,1,2#1,2#2,2}.
+
+The graph has a total of three nodes, and therefore contains three parts as separated by #.
+
+First node is labeled as 0. Connect node 0 to both nodes 1 and 2.
+Second node is labeled as 1. Connect node 1 to node 2.
+Third node is labeled as 2. Connect node 2 to node 2 (itself), thus forming a self-cycle.
+Visually, the graph looks like the following:
+
+       1
+      / \
+     /   \
+    0 --- 2
+         / \
+         \_/
+		 
+
+无向图的复制，之前没有遇到过，图的问题我都不怎么会。
+我觉得应该和复杂链表的复制差不多，先把新的节点挂在原节点上，进行复制，然后拆链。
+题目中的实例就有环的例子，应该注意。
+图的遍历也是题目的一个难点。
+
+之前每次都是内存过大，运行时错误，最后竟然直接通过了。
+代码提交了好久，我的代码效率应该很差。
+
+UndirectedGraphNode* Graph::cloneGraph(UndirectedGraphNode* node)
+{
+	if (node == NULL)
+		return NULL;
+
+	UndirectedGraphNode* p = node;
+
+	UndirectedGraphNode* newNode = NULL;
+	UndirectedGraphNode* newHead = NULL;
+
+	queue<UndirectedGraphNode*> Q;
+	Q.push(node);
+	
+	set<UndirectedGraphNode*> visited;
+	
+	while (!Q.empty())
+	{
+		p = Q.front();
+		Q.pop() ;
+		if (visited.find(p) != visited.end())
+			continue;
+		visited.insert(p);
+
+		newNode = new UndirectedGraphNode(p->label);
+		if (newHead == NULL)
+			newHead = newNode;
+
+		for (auto it = p->neighbors.begin(); it != p->neighbors.end(); it++)
+		{
+			newNode->neighbors.push_back(*it);
+			if (visited.find(*it) == visited.end())
+				Q.push(*it);
+		}
+		
+		p->neighbors.push_back(newNode);
+		
+	}
+
+	visited.clear();
+
+	Q.push(node);
+	while (!Q.empty())
+	{
+		p = Q.front();
+		Q.pop();
+		if (visited.find(p) != visited.end())
+			continue;
+		visited.insert(p);
+		
+		int n = p->neighbors.size();
+		for (int i = 0; i < n - 1; i++)
+		{
+			if (visited.find(p->neighbors[i]) == visited.end())
+				Q.push(p->neighbors[i]);
+		}
+		newNode = p->neighbors[n - 1];
+		for (auto it = newNode->neighbors.begin(); it != newNode->neighbors.end(); it++)
+		{
+			*it = (*it)->neighbors.back();
+		}
+
+	}
+
+	visited.clear();
+	Q.push(node);
+	while (!Q.empty())
+	{
+		p = Q.front();
+		Q.pop();
+		if (visited.find(p) != visited.end())
+			continue;
+		visited.insert(p);
+
+		p->neighbors.pop_back();
+		for (auto it = p->neighbors.begin(); it != p->neighbors.end(); it++)
+		{
+			if (visited.find(*it) == visited.end())
+				Q.push(*it);
+		}
+
+	}
+	return newHead;
+}

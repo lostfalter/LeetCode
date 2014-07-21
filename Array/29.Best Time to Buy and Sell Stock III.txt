@@ -1,0 +1,89 @@
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+Design an algorithm to find the maximum profit. You may complete at most two transactions.
+
+Note:
+You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+
+最多两笔交易的股票买卖。
+
+仍然设定当天之前进行股票买卖获取的最大利润作为关键变量。
+如果今天的股票价格比昨天便宜，那获取的最大利润肯定和昨天一样。
+如果今天的股票价格比昨天高，那问题重新考虑。。。
+max(i) = max(for j = 0....i - 1 max (max(j) + (price[i] - min(j + 1, i - 1))), price[i] - min(0, i - 1))
+今天的最大利润是一笔交易的最大利润和两笔交易的最大利润之中的最大值。
+一笔交易的话就是寻找之前的最小值，两笔交易的话就是寻找之前有过的一笔交易和那笔交易之后的最小值之和。
+需要保持三个数组
+max[n] 到某天为止的最大利润。
+min[n] 到某天为止的最低价格。 其实只要保存前一天的，即min。
+min2[n] 某天到现在为止的最低价格。
+
+方法写出来了，正确了，不过Time Limit Exceeded了。
+重新思考。
+
+其实方法没有正确。
+两个交易之和的最后结尾不一定是今天。
+int twoMax = 0;
+for (int j = 0; j <= i - 2; j++)
+{
+	if (max[j] + prices[i] - min2[j + 1] > twoMax)
+		twoMax = max[j] + prices[i] - min2[j + 1];
+}
+我写的这个不正确。
+真正应该保存，oneMax[n]和twoMax
+
+我突然发现超时的关键了，twoMax并不用一直计算，最后一次计算就好了，这样复杂度就是n平方了，而是线性的了。
+min2也可以通过逆序遍历来一次获得。
+
+最后发现min2也不对，还是max2比较靠谱，oneMax[i]记录到i为止的一遍交易最大利润。
+
+int Solution::maxProfit3(vector<int>& prices)
+{
+	int len = prices.size();
+	if (len <= 1)
+		return 0;
+
+	vector<int> oneMax(len);
+	
+	int max = 0;
+	oneMax[0] = 0;
+	int min = prices[0];
+	
+
+	for (int i = 1; i < len; i++)
+	{
+		if (prices[i] <= prices[i - 1])
+		{
+			oneMax[i] = oneMax[i - 1];
+			min = min > prices[i] ? prices[i] : min;
+		}
+		else
+		{
+			oneMax[i] = prices[i] - min > oneMax[i - 1] ? prices[i] - min : oneMax[i - 1];
+		}
+	}
+	
+
+	vector<int> max2(len);
+	max2[len - 1] = prices[len - 1];
+	for (int i = len - 2; i >= 2; i--)
+	{
+		max2[i] = max2[i + 1];
+		if (prices[i] > max2[i])
+			max2[i] = prices[i];
+	}
+	int twoMax = 0;
+	for (int i = 1; i < len - 1; i++)
+	{
+		if (oneMax[i] + max2[i + 1] - prices[i + 1] > twoMax)
+			twoMax = oneMax[i] + max2[i + 1] - prices[i + 1];
+	}
+
+
+	if (twoMax > oneMax[len - 1])
+		max = twoMax;
+	else
+		max = oneMax[len - 1];
+	return max;
+
+}

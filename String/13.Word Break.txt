@@ -1,0 +1,63 @@
+Given a string s and a dictionary of words dict, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+For example, given
+s = "leetcode",
+dict = ["leet", "code"].
+
+Return true because "leetcode" can be segmented as "leet code".
+
+初步的想法是递归，不过时间复杂度应该会非常高，先寻找可以匹配原S中前半部分的单词，然后匹配s的后半部分。
+
+bool String::wordBreak(string s, unordered_set<string>& dict)
+{
+	if (s == "")
+		return true;
+	bool result;
+	string newStr;
+	int len = s.length();
+	int wordLen;
+	for (auto it = dict.begin(); it != dict.end(); it++)
+	{
+		wordLen = (*it).length();
+		if (wordLen <= len && *it == s.substr(0, wordLen));
+		{
+			newStr = s.substr(wordLen, len);
+			result = wordBreak(newStr, dict);
+			if (result)
+				return true;
+		}
+	}
+	return false;
+}
+
+我写的方法，在VS中可以正确运行判断，但是在leetcode上有runtime error
+
+看了一下别人的讨论，我这种方法果然弱爆了，应该使用DP。
+我看到DP应该是关于S构造的。
+自己写了一个。
+注意substr的参数，我错误理解了，调试了半天。
+
+bool String::wordBreak(string s, unordered_set<string>& dict)
+{
+	int len = s.length();
+	
+	bool* can = new bool[len + 1];
+	can[0] = true;
+	bool flag;
+	for (int i = 0; i < len; i++)
+	{
+		flag = false;
+		for (int j = i; j >= 0; j--)
+		{
+			if (can[j] && dict.find(s.substr(j, i - j + 1)) != dict.end())
+			{
+				flag = true;
+				break;
+			}
+		}
+		can[i + 1] = flag;
+	}
+	bool result = can[len];
+	delete can;
+	return result;
+}

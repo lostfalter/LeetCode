@@ -1,0 +1,7 @@
+逐行从文件读入数据
+freopen("input.txt", "r", stdin);
+freopen("output.txt", "w", stdout);
+string line;
+while (getline(cin, line))
+{
+}		

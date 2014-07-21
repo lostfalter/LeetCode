@@ -1,0 +1,73 @@
+Given a binary tree, return the postorder traversal of its nodes' values.
+
+For example:
+Given binary tree {1,#,2,3},
+   1
+    \
+     2
+    /
+   3
+return [3,2,1].
+
+Note: Recursive solution is trivial, could you do it iteratively?
+
+后续遍历二叉树
+
+vector<int> BinaryTree::postorderTraversal(TreeNode* root)
+{
+	vector<int> traversal;
+	if (root == NULL)
+		return traversal;
+
+	TreeNode* p = NULL;
+	stack<TreeNode*> path;
+	stack<int> direct;
+
+
+	path.push(root);
+	direct.push(0);
+	while (!path.empty())
+	{
+		p = path.top();
+		if (direct.top() > 1)
+		{
+			traversal.push_back(p->val);
+			direct.pop();
+			path.pop();
+			if (!path.empty())
+			{
+				direct.top()++;
+			}
+			continue;
+		}
+
+		if (direct.top() == 0)
+		{
+			if (p->left)
+			{
+				path.push(p->left);
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+		else
+		{
+			if (p->right)
+			{
+				path.push(p->right);
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+
+	}
+	return traversal;
+}
+
+

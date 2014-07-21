@@ -1,0 +1,37 @@
+Given a non-negative number represented as an array of digits, plus one to the number.
+
+The digits are stored such that the most significant digit is at the head of the list.
+
+给数字加一，最高有效位在数组的头部。
+
+vector<int> Solution::plusOne(vector<int>& digits)
+{
+	int carry = 1;
+	int len = digits.size();
+	
+	vector<int> nd(len);
+
+	if (len == 0)
+	{
+		nd.push_back(1);
+		return nd;
+	}
+
+	int index = len - 1;
+	int temp;
+	while (index >= 0)
+	{
+		temp = carry + digits[index];
+		carry = temp / 10;
+		nd[index] = temp % 10;
+
+		index--;
+	}
+
+	if (carry > 0)
+	{
+		nd.insert(nd.begin(), carry);
+	}
+
+	return nd;
+}

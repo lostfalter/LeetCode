@@ -1,0 +1,83 @@
+Given a collection of integers that might contain duplicates, S, return all possible subsets.
+
+Note:
+Elements in a subset must be in non-descending order.
+The solution set must not contain duplicate subsets.
+For example,
+If S = [1,2,2], a solution is:
+
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+
+可能有重复的set。
+让select[K]的取值由0-1变成0-count，count由同样数字的个数决定。
+
+vector<vector<int>> Solution::subsetsWithDup(vector<int>& S)
+{
+	vector<vector<int>> result;
+	vector<vector<int>> resultSet;
+	int len = S.size();
+	if (len == 0)
+	{
+		result.push_back(vector<int>());
+		return result;
+	}
+
+	sort(S.begin(), S.end());
+	int same = 0;
+	vector<int> count;
+	count.push_back(1);
+	for (int i = 1; i < len; i++)
+	{
+		if (S[i] == S[i - 1])
+		{
+			same++;
+			count.back()++;
+		}
+		else
+		{
+			count.push_back(1);
+			S[i - same] = S[i];
+		}
+	}
+
+	len -= same;
+	vector<int> select(len);
+
+	int k = 0;
+	while (k >= 0)
+	{
+		if (select[k] > count[k])
+		{
+			select[k] = 0;
+			k--;
+			if (k >= 0)
+				select[k]++;
+			continue;
+		}
+
+		if (k == len - 1)
+		{
+			vector<int> subset;
+			for (int i = 0; i < len; i++)
+			{
+				for (int j = 0; j < select[i]; j++)
+					subset.push_back(S[i]);
+			}
+			result.push_back(subset);
+			select[k]++;
+		}
+		else
+		{
+			k++;
+		}
+	}
+
+	return result;
+}

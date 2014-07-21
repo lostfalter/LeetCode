@@ -1,0 +1,57 @@
+Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+Follow up:
+Can you solve it without using extra space?
+
+给定一个链表，判断是否有环，有环的话返回环的入口。
+这道题应该是微策略的笔试题。
+
+环的问题应该使用快慢指针。快慢指针相遇时说明有环，在指针走的时候，我们记录指针的步数，那么他们的步数差，就是环的长度K。
+重新设定快慢指针，快指针先走K步，慢指针后走，最后他们将会在环的入口相遇。
+
+//找出链表的环的入口
+ListNode* LinkedList::detectCycle(ListNode* head)
+{
+	if (head == NULL)
+		return NULL;
+	
+	ListNode* fast = head;
+	ListNode* slow = head;
+
+	int fastCount = 0;
+	int slowCount = 0;
+
+	while (fast)
+	{
+		fast = fast->next;
+		fastCount++;
+		if (fast)
+		{
+			fast = fast->next;
+			fastCount++;
+		}
+		else
+			break;
+
+		slow = slow->next;
+		slowCount++;
+		if (fast == slow)
+			break;
+	}
+	if (fast == NULL)
+		return NULL;
+
+	int k = fastCount - slowCount;
+
+	fast = head;
+	for (int i = 0; i < k; i++)
+		fast = fast->next;
+	slow = head;
+	while (slow != fast)
+	{
+		fast = fast->next;
+		slow = slow->next;
+	}
+
+	return slow;
+}

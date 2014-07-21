@@ -1,0 +1,131 @@
+Suppose a sorted array is rotated at some pivot unknown to you beforehand.
+
+(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+
+You are given a target value to search. If found in the array return its index, otherwise return -1.
+
+You may assume no duplicate exists in the array.
+
+在旋转数组中搜索。
+
+又写了很久，在微策略面试中被问到此题。
+知道做法，但是我的逻辑很难一次理清，导致算法容易出错。
+
+
+int Solution::searchInRotatedArray(int A[], int n, int target)
+{
+	if (n == 0)
+		return -1;
+
+	int left = 0;
+	int right = n - 1;
+	int mid;
+	while (left < right)
+	{
+		mid = (left + right) >> 1;
+		if (A[mid] == target)
+			return mid;
+		else if (A[left] == target)
+			return left;
+		else if (A[right] == target)
+			return right;
+		else if (A[mid] > target)
+		{
+			if (A[left] > target && A[right] < A[mid])
+			{
+				left = mid + 1;
+				right--;
+			}
+			else
+			{
+				left++;
+				right = mid - 1;
+			}
+		}
+		else
+		{
+			if (A[left] > A[mid] && target > A[left])
+			{
+				left++;
+				right = mid - 1;
+			}
+			else
+			{
+				left = mid + 1;
+				right--;
+			}
+		}
+	} 
+
+	if (A[left] == target)
+		return left;
+	else
+		return -1;
+}
+
+直接查找，非常容易错。
+先找到旋转点，会使程序更清晰一些。
+
+int Solution::findPivot(int A[], int n)
+{
+	if (n == 0)
+		return false;
+
+	int pivot = 0;
+	int left = 0;
+	int right = n - 1;
+	int mid;
+	while (left < right)
+	{
+		mid = (left + right) >> 1;
+		if (mid > 0 && A[mid] < A[mid - 1])
+		{
+			pivot = mid;
+			break;
+		}
+		else if (A[right] > A[mid])
+		{
+			right = mid - 1;
+		}
+		else
+		{
+			left = mid + 1;
+		}
+	}
+
+	if (left > 0 && A[left] < A[left - 1])
+		pivot = left; 
+
+	return pivot;
+}
+
+int Solution::searchInRotatedArray2(int A[], int n, int target)
+{
+	if (n == 0)
+		return -1;
+
+	int pivot = findPivot(A, n);
+
+	int left = 0;
+	int right = n - 1;
+	int mid;
+	while (left < right)
+	{
+		mid = (left + right) >> 1;
+		if (A[(mid + pivot) % n] == target)
+			return (mid + pivot) % n;
+		else if (A[(mid + pivot) % n] > target)
+		{
+			right = mid - 1;
+		}
+		else
+		{
+			left = mid + 1;
+		}
+	}
+
+	if (A[(left + pivot) % n] == target)
+		return (left + pivot) % n;
+	else
+		return -1;
+}

@@ -1,0 +1,46 @@
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "a*") → true
+isMatch("aa", ".*") → true
+isMatch("ab", ".*") → true
+isMatch("aab", "c*a*b") → true
+
+题意我一开始就理解错了，*并不是代表任何字符，而是代表之前的字符是任意个数的。
+即使知道了编写思想，在写的过程中还是很容易出现各种纰漏的。
+
+bool String::isMatch(const char* s, const char* p)
+{
+	if (*p == '\0')
+		return *s == '\0';
+
+
+	if (*(p + 1) == '*')
+	{
+		while (*s != '\0' && (*p == *s || *p == '.'))
+		{
+			if (isMatch(s, p + 2))
+				return true;
+			s++;
+		}
+		return isMatch(s, p + 2);
+	}
+	else
+	{
+		if ((*s != *p && *p != '.') || *s == '\0')
+			return false;	
+		else
+			return isMatch(s + 1, p + 1);
+	}
+
+	return false;
+}

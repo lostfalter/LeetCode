@@ -1,0 +1,36 @@
+Implement pow(x, n).
+
+注意x，n是负数的情况。
+
+double Solution::pow(double x, int n)
+{
+	if (x == 0)
+		return 0;
+	else if (x == 1)
+		return 1;
+	else if (n == 0)
+		return 1;
+	else if (n == 1)
+		return x;
+	
+	if (x == -1)
+	{
+		if (n % 2)
+			return -1;
+		else
+			return 1;
+	}
+
+	if (x < 0)
+		return pow(-1, n) * pow(-x, n);
+
+	if (n < 0)
+		return 1 / pow(x, -n);
+
+
+	double temp = pow(x, n / 2);
+	if (n % 2)
+		return temp * temp * x;
+	else
+		return	temp * temp;
+}

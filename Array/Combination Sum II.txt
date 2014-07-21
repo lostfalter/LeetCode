@@ -1,0 +1,83 @@
+Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+
+Each number in C may only be used once in the combination.
+
+Note:
+All numbers (including target) will be positive integers.
+Elements in a combination (a1, a2, … , ak) must be in non-descending order. (ie, a1 ≤ a2 ≤ … ≤ ak).
+The solution set must not contain duplicate combinations.
+For example, given candidate set 10,1,2,7,6,1,5 and target 8, 
+A solution set is: 
+[1, 7] 
+[1, 2, 5] 
+[2, 6] 
+[1, 1, 6] 
+
+
+和原始的combination sum类似，只不过不能无限取一个数了。
+
+vector<vector<int>> Solution::combinationSum2(vector<int>& num, int target)
+{
+	set<vector<int>> resultSet;
+	int len = num.size();
+	sort(num.begin(), num.end());
+
+	vector<int> count(len);
+	vector<int> currentSum(len);
+	int k = 0;
+	while (k >= 0 && k < len)
+	{
+		if (count[k] > 1)
+		{
+			count[k] = 0;
+			k--;
+			if (k >= 0)
+				count[k]++;
+			continue;
+		}
+
+		if (k > 0)
+			currentSum[k] = currentSum[k - 1] + num[k] * count[k];
+		else
+			currentSum[k] = num[k] * count[k];
+		if (currentSum[k] == target)
+		{
+			vector<int> solution;
+			for (int i = 0; i <= k; i++)
+			{
+				if (count[i])
+					solution.push_back(num[i]);
+			}
+			resultSet.insert(solution);
+			count[k] = 0;
+			k--;
+			if (k >= 0)
+				count[k]++;
+		}
+		else if (currentSum[k] > target)
+		{
+			count[k] = 0;
+			k--;
+			if (k >= 0)
+				count[k]++;
+		}
+		else
+		{
+			if (k + 1 < len)
+			{
+				k++;
+			}
+			else
+			{
+				count[k]++;
+			}
+		}
+	}
+
+	vector<vector<int>> result;
+	for (auto it = resultSet.begin(); it != resultSet.end(); it++)
+	{
+		result.push_back(*it);
+	}
+	return result;
+}

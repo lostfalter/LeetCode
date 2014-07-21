@@ -1,0 +1,50 @@
+Given an unsorted integer array, find the first missing positive integer.
+
+For example,
+Given [1,2,0] return 3,
+and [3,4,-1,1] return 2.
+
+Your algorithm should run in O(n) time and uses constant space.
+
+找到第一个负数，如果没找到就输出len。
+
+题意理解错了，是要找到第一个没有的正整数。
+
+看了别人的思路才写出来。
+另外发现了一件事，原来不能写1<X<2这种判断，好像只会执行最后一个<。
+
+int Solution::firstMissingPositive(int A[], int n)
+{
+	if (A == NULL || n == 0)
+		return 1;
+	
+	for (int i = 0; i < n; i++)
+	{
+		if (A[i] <= 0 || A[i] > n || A[i] == i + 1)
+		{
+			continue;
+		}
+
+		while (A[i] > 0 && A[i] <= n && A[i] != i + 1)
+		{
+			int temp = A[A[i] - 1];
+			if (temp == A[i])
+				break;
+			A[A[i] - 1] = A[i];
+			A[i] = temp;
+			
+		}
+	}
+
+	int miss = n + 1;
+	for (int i = 0; i < n; i++)
+	{
+		if (A[i] != i + 1)
+		{
+			miss = i + 1;
+			break;
+		}
+	}
+
+	return miss;
+}

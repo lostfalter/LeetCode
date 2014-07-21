@@ -1,0 +1,49 @@
+Given two binary strings, return their sum (also a binary string).
+
+For example,
+a = "11"
+b = "1"
+Return "100".
+
+二进制相加。
+
+string String::addBinary(string a, string b)
+{
+	string result;
+	int lenA = a.length();
+	int lenB = b.length();
+	int carry = 0;
+	int indexA = lenA - 1;
+	int indexB = lenB - 1;
+	int temp;
+	int tempChar;
+	while (indexA >= 0 && indexB >= 0)
+	{
+		temp = a[indexA] - '0' + b[indexB] - '0' + carry;
+		carry = temp / 2;
+		tempChar = temp % 2 + '0';
+		result.insert(result.begin(), tempChar);
+		indexA--;
+		indexB--;
+	}
+	while (indexA >= 0)
+	{
+		temp = a[indexA] - '0' + carry;
+		carry = temp / 2;
+		tempChar = temp % 2 + '0';
+		result.insert(result.begin(), tempChar);
+		indexA--;
+	}
+	while (indexB >= 0)
+	{
+		temp = b[indexB] - '0' + carry;
+		carry = temp / 2;
+		tempChar = temp % 2 + '0';
+		result.insert(result.begin(), tempChar);
+		indexB--;
+	}
+	if (carry)
+		result.insert(result.begin(), carry + '0');
+
+	return result;
+}

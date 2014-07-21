@@ -1,0 +1,129 @@
+Given two words (start and end), and a dictionary, find all shortest transformation sequence(s) from start to end, such that:
+
+Only one letter can be changed at a time
+Each intermediate word must exist in the dictionary
+For example,
+
+Given:
+start = "hit"
+end = "cog"
+dict = ["hot","dot","dog","lot","log"]
+Return
+  [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"]
+  ]
+Note:
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+
+一开始觉得简单，由word ladder直接改，可以得到所有路径。
+不过问题不断，最后还超时了。
+只好参考别人的解法，广度优先还是要尽量避免重复遍历。
+
+vector<vector<string>> String::findLadders(string start, string end, unordered_set<string>& dict)
+{
+	vector<vector<string>> result;
+	if (dict.size() == 0)
+		return result;
+	
+
+	queue<string> Q;
+
+	Q.push(start);
+
+	string word;
+	string newWord;
+
+	map<string, int> visited;
+	for (auto it = dict.begin(); it != dict.end(); it++)
+	{
+		visited[*it] = 0;
+	}
+	map<string, vector<string>> father;
+
+	visited[start] = 1;
+
+	int wordLen = start.length();
+	int pathLen = dict.size() + 3;
+	
+	bool flag = false;
+	while (!Q.empty())
+	{
+		word = Q.front();
+		Q.pop();
+
+		if (visited[word] >= pathLen)
+			break;
+
+		for (int i = 0; i < wordLen; i++)
+		{
+			bool flag = false;
+			newWord = word;
+			for (char c = 'a'; c <= 'z'; c++)
+			{
+				newWord[i] = c;
+				if (newWord == word)
+					continue;
+				else if (newWord == end)
+				{
+					pathLen = visited[word] + 1;
+
+					father[end].push_back(word);
+					
+					flag = true;
+					break;
+				}
+				else
+				{
+					if (dict.find(newWord) != dict.end())
+					{
+
+						if (!visited[newWord])
+						{
+							visited[newWord] = visited[word] + 1;
+							father[newWord].push_back(word);
+							Q.push(newWord);
+						}
+						else if (visited[newWord] == visited[word] + 1)
+						{
+							father[newWord].push_back(word);
+						}
+					}
+				}
+			}
+			if (flag)
+				break;
+		}
+	}
+
+	queue<vector<string>> pathQ;
+	vector<string> path;
+	path.push_back(end);
+	pathQ.push(path);
+	while (!pathQ.empty())
+	{
+		path = pathQ.front();
+		pathQ.pop();
+		
+		word = path.back();
+		if (word == start)
+		{
+			result.push_back(path);
+			continue;
+		}
+		for (auto it = father[word].begin(); it != father[word].end(); it++)
+		{
+			path.push_back(*it);
+			pathQ.push(path);
+			path.pop_back();
+		}
+
+	}
+
+	for (auto it = result.begin(); it != result.end(); it++)
+	{
+		reverse((*it).begin(), (*it).end());
+	}
+	return result;
+}

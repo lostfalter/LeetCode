@@ -1,0 +1,47 @@
+Sort a linked list using insertion sort.
+使用插入排序排序链表，没有时间和空间复杂度的要求。
+
+思路比较简单，就是假定前段的链表排好序，将新的链表结点插入其中就好了。
+只要注意一下取出链表的操作，保存好前后的链接信息就好了。
+
+ListNode* Solution::insertionSortList(ListNode* head)
+{
+	if (head == NULL || head->next == NULL)
+		return head;
+
+	ListNode* node = head->next;
+	ListNode* preNode = head;
+	ListNode* postNode = node->next;
+	ListNode* p;
+	ListNode* q;
+	ListNode* fHead = new ListNode(-1);	//伪头部
+	fHead->next = head;
+	while (node)
+	{
+		postNode = node->next;
+		if (node->val >= preNode->val)
+		{
+			preNode = node;
+		}
+		else
+		{
+
+			for (p = fHead->next, q = fHead; p != node; p = p->next, q = q->next)
+			{
+				if (p->val > node->val)
+				{
+					q->next = node;
+					node->next = p;
+					preNode->next = postNode;
+					break;
+				}
+			}
+		}
+		node = postNode;
+	}
+	head = fHead->next;
+	delete fHead;
+	return head;
+	
+}
+

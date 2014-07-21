@@ -1,0 +1,30 @@
+Given a sorted linked list, delete all duplicates such that each element appear only once.
+
+For example,
+Given 1->1->2, return 1->2.
+Given 1->1->2->3->3, return 1->2->3.
+
+删除链表中重复的节点。
+
+ListNode* LinkedList::deleteDuplicates(ListNode* head)
+{
+	if (head == NULL)
+		return head;
+	
+	ListNode* p = head;
+	ListNode* temp = NULL;
+	while (p->next)
+	{
+		if (p->next->val == p->val)
+		{
+			temp = p->next;
+			p->next = temp->next;
+			delete temp;
+		}
+		else
+		{
+			p = p->next;
+		}
+	}
+	return head;
+}

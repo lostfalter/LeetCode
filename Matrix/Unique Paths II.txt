@@ -1,0 +1,73 @@
+Follow up for "Unique Paths":
+
+Now consider if some obstacles are added to the grids. How many unique paths would there be?
+
+An obstacle and empty space is marked as 1 and 0 respectively in the grid.
+
+For example,
+There is one obstacle in the middle of a 3x3 grid as illustrated below.
+
+[
+  [0,0,0],
+  [0,1,0],
+  [0,0,0]
+]
+The total number of unique paths is 2.
+
+Note: m and n will be at most 100.
+
+机器人从2D矩阵的左上角走到右下角，只能向右或者向下，问有多少条路径。
+矩阵的中间可能有障碍，障碍不能通过。
+
+还是动归问题，不过在中间会有一些判断。
+
+int Matrix::uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid)
+{
+	int m = obstacleGrid.size();
+	if (m == 0)
+		return 0;
+	int n = obstacleGrid[0].size();
+	if (n == 0)
+		return 0;
+
+	vector<vector<int>> w;
+	for (int i = 0; i < m; i++)
+	{
+		vector<int> row(n);
+		w.push_back(row);
+	}
+
+	if (obstacleGrid[m - 1][n - 1])
+		return 0;
+
+	w[m - 1][n - 1] = 1;
+
+	for (int i = m - 2; i >= 0; i--)
+	{
+		if (obstacleGrid[i][n - 1])
+			w[i][n - 1] = 0;
+		else
+			w[i][n - 1] = w[i + 1][n - 1];
+	}
+
+	for (int i = n - 2; i >= 0; i--)
+	{
+		if (obstacleGrid[m - 1][i])
+			w[m - 1][i] = 0;
+		else
+			w[m - 1][i] = w[m - 1][i + 1];
+	}
+
+	for (int i = m - 2; i >= 0; i--)
+	{
+		for (int j = n - 2; j >= 0; j--)
+		{
+			if (obstacleGrid[i][j])
+				w[i][j] = 0;
+			else
+				w[i][j] = w[i + 1][j] + w[i][j + 1];
+		}
+	}
+
+	return w[0][0];
+}

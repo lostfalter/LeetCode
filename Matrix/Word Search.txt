@@ -1,0 +1,88 @@
+Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+For example,
+Given board =
+
+[
+  ["ABCE"],
+  ["SFCS"],
+  ["ADEE"]
+]
+word = "ABCCED", -> returns true,
+word = "SEE", -> returns true,
+word = "ABCB", -> returns false.
+
+很傻的方法，以矩阵中每个点为起点做深度遍历。
+
+bool Matrix::exist(vector<vector<char>>& board, string word)
+{
+	int m = board.size();
+	int n = board.front().size();
+
+	int wordLen = word.size();
+
+	int directX[] = { -1, 0, 1, 0 };
+	int directY[] = { 0, -1, 0, 1 };
+
+	vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+	for (int row = 0; row < m; row++)
+	{
+		for (int col = 0; col < n; col++)
+		{
+			if (board[row][col] == word[0])
+			{
+				if (wordLen == 1)
+					return true;
+				int k = 0;
+				vector<int> posX(wordLen);
+				vector<int> posY(wordLen);
+				vector<int> direction(wordLen);
+				posX[0] = row;
+				posY[0] = col;
+				visited[row][col] = true;
+				while (k >= 0)
+				{
+					if (direction[k] > 3)
+					{
+						visited[posX[k]][posY[k]] = false;
+						direction[k] = 0;
+						k--;
+						if (k >= 0)
+							direction[k]++;
+						continue;
+					}
+
+					posX[k + 1] = posX[k] + directX[direction[k]];
+					posY[k + 1] = posY[k] + directY[direction[k]];
+					if (posX[k + 1] < 0 ||
+						posX[k + 1] >= m ||
+						posY[k + 1] < 0 ||
+						posY[k + 1] >= n ||
+						visited[posX[k + 1]][posY[k + 1]] ||
+						board[posX[k + 1]][posY[k + 1]] != word[k + 1])
+					{
+						direction[k]++;
+					}
+					else
+					{
+						visited[posX[k + 1]][posY[k + 1]] = true;
+						if (k == wordLen - 2)
+						{
+							return true;
+						}
+						else
+						{
+							k++;
+						}
+					}
+				}
+
+			}
+		}
+	}
+
+	return false;
+}

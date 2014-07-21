@@ -1,0 +1,53 @@
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
+
+Note: You can only move either down or right at any point in time.
+
+在一个2D矩阵中找到一条值最小从左上到右下的路径，只能往右和往下走。
+
+直觉上的方法应该是o(m * n)，设定函数s(i, j)代表从坐标（i，j）出发到右下角的路径的最小值。
+由于只能往下或者往右走，那s（i，j） = g（i，j） + min（s（i，j+1）， s（i+1，j））。
+从矩阵的右下角开始构建，每一个s（i，j）都只被计算一次，共需m*n的时间。
+
+int Matrix::minPathSum(vector<vector<int>>& grid)
+{
+	int m = grid.size();
+	if (m == 0)
+		return 0;
+
+	int n = grid[0].size();
+
+	vector<vector<int>> s;
+	for (int i = 0; i < m; i++)
+	{
+		vector<int> row(n);
+		s.push_back(row);
+	}
+
+
+	s[m - 1][n - 1] = grid[m - 1][n - 1];
+
+	for (int i = m - 2; i >= 0; i--)
+	{
+		s[i][n - 1] = s[i + 1][n - 1] + grid[i][n - 1];
+	}
+
+	for (int i = n - 2; i >= 0; i--)
+	{
+		s[m - 1][i] = s[m - 1][i + 1] + grid[m - 1][i];
+	}
+
+
+	for (int i = m - 2; i >= 0; i--)
+	{
+		for (int j = n - 2; j >= 0; j--)
+		{
+			s[i][j] = grid[i][j];
+			if (s[i + 1][j] < s[i][j + 1])
+				s[i][j] += s[i + 1][j];
+			else
+				s[i][j] += s[i][j + 1];
+		}
+	}
+
+	return s[0][0];
+}

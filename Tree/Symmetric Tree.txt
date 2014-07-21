@@ -1,0 +1,55 @@
+Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+
+For example, this binary tree is symmetric:
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+But the following is not:
+    1
+   / \
+  2   2
+   \   \
+   3    3
+Note:
+Bonus points if you could solve it both recursively and iteratively.
+
+confused what "{1,#,2,3}" means? > read more on how binary tree is serialized on OJ.
+
+将左子树左右倒转，然后判断左右子树是否是same tree。
+
+bool BinaryTree::isSameTree(TreeNode* p, TreeNode* q)
+{
+	if (p == NULL && q == NULL)
+		return true;
+	else if (p == NULL || q == NULL)
+		return false;
+	else return p->val == q->val && 
+				isSameTree(p->left, q->left) && 
+				isSameTree(p->right, q->right);
+}
+
+bool BinaryTree::isSymmetric(TreeNode* root)
+{
+	reverseTree(root->right);
+	return isSameTree(root->left, root->right);
+}
+
+void BinaryTree::reverseTree(TreeNode* root)
+{
+	if (root == NULL)
+		return;
+
+	reverseTree(root->left);
+	reverseTree(root->right);
+	
+	TreeNode* temp = root->left;
+	root->left = root->right;
+	root->right = temp;
+}
+
+好像略复杂了，直接在判断的时候倒转应该也是可以的。
+
+

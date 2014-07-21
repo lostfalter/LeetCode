@@ -1,0 +1,114 @@
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+  [
+    ["aa","b"],
+    ["a","a","b"]
+  ]
+  
+将字符串分割，每个子串都是回文字符串。
+
+最差的情况应该是，将每一个字符都分割开来，这样就有len个回文字符串了。
+
+第一次提交就通过了。。。
+我的写法很ugly，完全和word break II一样，只不过把单词是否属于字典的判断改成是否是回文字符串了。
+看来默认的复杂度要求不是很高。
+
+vector<vector<string>> String::partition(string s)
+{
+	int len = s.length();
+	vector<bool> can(len + 1);
+	for (int i = 0; i < len + 1; i++)
+		can[i] = false;
+	can[0] = true;
+
+	bool flag = false;
+	for (int i = 0; i < len; i++)
+	{
+		
+		flag = false;
+		for (int j = i; j >= 0; j--)
+		{
+			if (can[j] && isPalindrome(s.substr(j + 1, i - j + 1)))
+			{
+				flag = true;
+				break;
+			}
+		}
+		can[i + 1] = flag;
+	}
+
+	vector<vector<int>> indexTable(len + 1);
+	for (int i = 0; i < len; i++)
+	{
+		for (int j = i; j >= 0; j--)
+		{
+			if (can[j] && isPalindrome(s.substr(j, i - j + 1)))
+			{
+				indexTable[j].push_back(i + 1);
+			}
+		}
+	}
+
+
+	vector<int> indexList;
+	vector<vector<string>> resultList;
+
+	getPalindrome(indexTable, 0, indexList, s, resultList);
+	return resultList;
+
+}
+
+bool String::isPalindrome(string s)
+{
+	int len = s.length();
+	if (len <= 1)
+		return true;
+
+	int p = 0;
+	int q = len - 1;
+	bool flag = true;
+	while (p < q)
+	{
+		if (s[p] != s[q])
+		{
+			flag = false;
+			break;
+		}
+		
+		p++;
+		q--;
+	}
+	return flag;
+
+}
+void String::getPalindrome(vector<vector<int>>& can, int index, vector<int>& indexList, string& s, vector<vector<string>>& resultList)
+{
+	if (index == can.size() - 1)
+	{
+		string newStr;
+		int pre = 0;
+		vector<string> result;
+
+		for (auto it = indexList.begin(); it != indexList.end(); it++)
+		{
+			result.push_back(s.substr(pre, *it - pre));
+			pre = *it;
+		}
+		resultList.push_back(result);
+		return;
+	}
+
+	for (auto it = can[index].begin(); it != can[index].end(); it++)
+	{
+		indexList.push_back(*it);
+		getPalindrome(can, *it, indexList, s, resultList);
+		indexList.pop_back();
+	}
+
+}
+  

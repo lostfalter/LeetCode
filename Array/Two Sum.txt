@@ -1,0 +1,59 @@
+Given an array of integers, find two numbers such that they add up to a specific target number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+
+You may assume that each input would have exactly one solution.
+
+Input: numbers={2, 7, 11, 15}, target=9
+Output: index1=1, index2=2
+
+查找数组的两个数相加起来为目标值，返回两个数的坐标，坐标从1开始。
+假设一定有解。
+
+vector<int> Solution::twoSum(vector<int>& numbers, int target)
+{
+	vector<int> result;
+	int len = numbers.size();
+	
+	vector<int> a = numbers;
+	sort(a.begin(), a.end());
+	int s = 0;
+	int e = len - 1;
+	while (s != e)
+	{
+		if (a[s] + a[e] == target)
+		{
+			result.push_back(a[s]);
+			result.push_back(a[e]);
+			break;
+		}
+		else if (a[s] + a[e] > target)
+			e--;
+		else
+			s++;
+	}
+	int index1 = - 1, index2 = -1;
+	for (int i = 0; i < len; i++)
+	{
+		if (index1 == -1 && numbers[i] == a[s])
+		{
+			index1 = i;
+		}
+		else if (index2 == -1 && numbers[i] == a[e])
+		{
+			index2 = i;
+		}
+	}
+	result.clear();
+	if (index1 < index2)
+	{
+		result.push_back(index1 + 1);
+		result.push_back(index2 + 1);
+	}
+	else
+	{
+		result.push_back(index2 + 1);
+		result.push_back(index1 + 1);
+	}
+	return result;
+}

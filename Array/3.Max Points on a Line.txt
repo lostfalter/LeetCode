@@ -1,0 +1,65 @@
+Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+
+给定一些点，找到平面中包含最多点的直线上的点的个数。
+这道题我完全没有思路。
+本以为我可以用暴力解出，发现直线的表达，我也不行，用y=kx+b表达直线，我自己都不太相信，毕竟斜率不一定是整数，浮点数的话就无法用相等来判断。
+看到别人提出了直线应该用ax + by + c = 0来表示，这样通过a，b，c三个参数就唯一确定了一条直线，不会有浮点数的问题，a，b，c可以构造并计算最大公约数来化简。
+
+
+
+int Solution::maxPoints(vector<Point> &points)
+{
+	int a, b;
+
+	int maxGcd;
+	
+	int pointNum = points.size();
+	
+	
+	int result = 0;
+	for (int i = 0; i < pointNum; i++)
+	{
+		unordered_map<string, int> lines;
+		int same = 1;
+		int maxPoints = 0;
+		for (int j = i + 1; j < pointNum; j++)
+		{
+			a = points[i].y - points[j].y;
+			b = points[j].x - points[i].x;
+			bool negative = false;
+			if (a < 0)
+			{
+				a = -a;
+				b = -b;
+			}
+			if (b < 0)
+			{
+				negative = true;
+				b = -b;
+			}
+			maxGcd = gcd(a, b);
+			if (maxGcd == 0)
+			{
+				same++;
+				continue;
+			}
+			a /= maxGcd;
+			b /= maxGcd;
+			
+			if (negative)
+				b = -b;
+			if (a == 0)
+				b = 1;
+			else if (b == 0)
+				a = 1;
+			maxPoints = max(maxPoints, ++lines[to_string(a) + " " + to_string(b)]);
+		}
+		result = max(result, maxPoints + same);
+	}
+	
+	return result;
+	
+
+
+	
+}

@@ -1,0 +1,39 @@
+Given an array of integers, every element appears three times except for one. Find that single one.
+
+Note:
+Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+
+仍然是编程之美上面出现过的题目。
+将所有数字的每一位加起来，出现三次的数在他那位上对3取余肯定为0。
+需要额外的一个32格数组存放每一位的结果。
+注意符号的优先级。
+
+int Solution::singleNumber2(int A[], int n)
+{
+	if (n == 0)
+		return 0;
+	int bit[32];
+	
+	for (int i = 0; i < 32; i++)
+		bit[i] = 0;
+	
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			bit[j] = (((A[i] >> j) & 0x1) + bit[j]);
+		}
+		for (int j = 0; j < 32; j++)
+			cout << bit[j];
+		cout << endl;
+	}
+	
+	int result = 0;
+	for (int i = 0; i < 32; i++)
+	{
+		result += ((bit[i] % 3) << i);
+	}
+	cout << result << endl;
+	
+	return result;
+}

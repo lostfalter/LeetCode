@@ -1,0 +1,99 @@
+Given a binary tree, flatten it to a linked list in-place.
+
+For example,
+Given
+
+         1
+        / \
+       2   5
+      / \   \
+     3   4   6
+The flattened tree should look like:
+   1
+    \
+     2
+      \
+       3
+        \
+         4
+          \
+           5
+            \
+             6
+click to show hints.
+
+Hints:
+If you notice carefully in the flattened tree, each node's right child points to the next node of a pre-order traversal.
+
+
+前序遍历。把节点连接到新的树的时候，保存左右节点的信息。
+
+void BinaryTree::flatten(TreeNode* root)
+{
+	if (root == NULL)
+		return;
+
+	TreeNode* p = NULL;
+	stack<TreeNode*> path;
+	stack<TreeNode*> leftNode;
+	stack<TreeNode*> rightNode;
+	stack<int> direct;
+	
+
+	TreeNode* fakeRoot = new TreeNode(-1);
+	TreeNode* lastNode = fakeRoot;
+
+	path.push(root);
+	direct.push(0);
+	while (!path.empty())
+	{
+		p = path.top();
+		if (direct.top() > 1)
+		{
+			direct.pop();
+			path.pop();
+			leftNode.pop();
+			rightNode.pop();
+
+			if (!path.empty())
+				direct.top()++;
+			continue;
+		}
+
+		if (direct.top() == 0)
+		{
+			leftNode.push(p->left);
+			rightNode.push(p->right);
+
+			lastNode->right = p;
+			p->left = NULL;
+			p->right = NULL;
+			lastNode = p;
+
+			if (leftNode.top())
+			{
+				path.push(leftNode.top());
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+		else
+		{
+			if (rightNode.top())
+			{
+				path.push(rightNode.top());
+				direct.push(0);
+			}
+			else
+			{
+				direct.top()++;
+			}
+		}
+
+	}
+
+	delete fakeRoot;
+}	

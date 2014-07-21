@@ -1,0 +1,135 @@
+Given a 2D board containing 'X' and 'O', capture all regions surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+For example,
+X X X X
+X O O X
+X X O X
+X O X X
+After running your function, the board should be:
+
+X X X X
+X X X X
+X X X X
+X O X X
+
+矩阵类型的题目，我都不太擅长。
+但是这题乍一看应该会容易，就是把符合某个条件的格子染色。
+最初的想法是，如果O的上下左右处都有X的话，那就算被包围了，不过事实并非如此。
+我又有了一个新的想法，从一个O开始，做广度优先遍历，如果能出去（碰到边沿），说明没被包围，如果不能出去，说明被包围了，就把遍历过的格子全部染色。
+那格子应该有4种状态，未访问，能出去，不能出去，处理中。
+
+注意更新格子状态的时机。
+
+void Matrix::solve(vector<vector<char>>& board)
+{
+	int maxRow;
+	int maxColumn;
+	maxRow = board.size();
+	if (maxRow <= 1)
+		return;
+	maxColumn = board[0].size();
+	if (maxColumn <= 1)
+		return;
+
+
+	int directX[4] = { -1, 0, 1, 0 };
+	int directY[4] = { 0, -1, 0, 1 };
+
+	vector<vector<int>> state;
+	for (int i = 0; i < maxRow; i++)
+	{
+		vector<int> row(maxColumn);
+		state.push_back(row);
+	}
+
+	//0, 未处理，1，可以出去，2，不可以出去，3，处理中
+
+	queue<Point> Q;
+	queue<Point> Cache;
+	Point p(-1, -1);
+	
+	
+	for (int i = 0; i < maxRow; i++)
+	{
+		for (int j = 0; j < maxColumn; j++)
+		{
+			if (board[i][j] == 'O' && state[i][j] == 0)
+			{
+				p.x = i;
+				p.y = j;
+				state[p.x][p.y] = 3;
+				Q.push(p);
+
+				bool flag = false;
+				
+				while (!Q.empty())
+				{
+					p = Q.front();
+					Q.pop();
+
+					
+
+
+					if (!flag)
+					{
+						if (p.x == 0 || p.x == maxRow - 1 || p.y == 0 || p.y == maxColumn - 1)
+						{
+							flag = true;
+						}
+					}
+
+
+					for (int index = 0; index < 4; index++)
+					{
+						p.x += directX[index];
+						p.y += directY[index];
+						if (p.x >= 0 
+							&& p.x <= maxRow - 1 
+							&& p.y >= 0 
+							&& p.y <= maxColumn - 1 
+							&& board[p.x][p.y] == 'O' 
+							&& state[p.x][p.y] == 0)
+						{
+							state[p.x][p.y] = 3;
+							Q.push(p);
+						}
+						p.x -= directX[index];
+						p.y -= directY[index];
+
+					}
+
+
+					Cache.push(p);
+
+				}
+
+				int st;
+				if (flag)
+					st = 1;
+				else
+					st = 2;
+				while (!Cache.empty())
+				{
+					p = Cache.front();
+					Cache.pop();
+
+					state[p.x][p.y] = st;
+				}
+			}
+		}
+	}
+	
+	for (int i = 0; i < maxRow; i++)
+	{
+		for (int j = 0; j < maxColumn; j++)
+		{
+			if (board[i][j] == 'O' && state[i][j] == 2)
+			{
+				board[i][j] = 'X';
+			}
+		}
+	}
+}
+

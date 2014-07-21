@@ -1,0 +1,35 @@
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+
+和有序数组转换成平衡二叉搜索树是一样的原理，不过找中点会麻烦一点。
+
+TreeNode* BinaryTree::sortedListToBST(ListNode* head)
+{
+	if (head == NULL)
+		return NULL;
+
+	ListNode* fakeHead = new ListNode(-1);
+	ListNode* pre = fakeHead;
+	ListNode* slow = head;
+	ListNode* fast = head;
+	pre->next = slow;
+
+
+	while (fast)
+	{
+		fast = fast->next;
+		if (fast)
+		{
+			fast = fast->next;
+			pre = slow;
+			slow = slow->next;
+		}
+	}
+
+	pre->next = NULL;
+	TreeNode* root = new TreeNode(slow->val);
+	root->left = sortedListToBST(fakeHead->next);
+	root->right = sortedListToBST(slow->next);
+	
+	delete fakeHead;
+	return root;
+}

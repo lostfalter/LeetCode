@@ -1,0 +1,43 @@
+Divide two integers without using multiplication, division and mod operator.
+
+给两个整数做除法，不能用*，/，%。
+
+用减法。
+
+一个个减会超时。
+每次将除数倍增。
+
+
+int Solution::divide(int dividend, int divisor)
+{
+	long long result = 0;
+	bool negative = false;
+	long long a = dividend;
+	long long b = divisor;
+	if (a < 0)
+	{
+		negative = !negative;
+		a = -a;
+	}
+	if (b < 0)
+	{
+		negative = !negative;
+		b = -b;
+	}
+	
+	while (a >= b)
+	{
+		long long c = b;
+		for (int i = 0; a >= c; i++, c <<= 1)
+		{
+			a -= c;
+			result += 1 << i;
+		}
+	}
+	
+
+	if (negative)
+		result = -result;
+	
+	return result;
+}

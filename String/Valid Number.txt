@@ -1,0 +1,136 @@
+Validate if a given string is numeric.
+
+Some examples:
+"0" => true
+" 0.1 " => true
+"abc" => false
+"1 a" => false
+"2e10" => true
+Note: It is intended for the problem statement to be ambiguous. You should gather all requirements up front before implementing one.
+
+验证一个字符串是否是符合规范的数字。
+
+提交N次之后终于成功。
+用状态转移来做比较好，不过空格之类的处理并不是很好。
+整体的代码还是很丑陋的，有很多例外判断。
+
+bool Solution::isNumber(const char* s)
+{
+	if (s == NULL)
+		return false;
+	bool flag = true;
+	bool pointFlag = false;
+	bool eFlag = false;
+	
+	enum
+	{
+		START,
+		BLANK,
+		BLANK2,
+		POSTIVE,
+		NEGATIVE,
+		NUMBER,
+		POINT,
+		POINT2,
+		E,
+		END
+	};
+	map<char, int> charMap;
+	charMap[' '] = BLANK;
+	charMap['+'] = POSTIVE;
+	charMap['-'] = NEGATIVE;
+	for (int i = 0; i <= 9; i++)
+	{
+		charMap[i + '0'] = NUMBER;
+	}
+	charMap['.'] = POINT;
+	charMap['e'] = E;
+	charMap['\0'] = END;
+	
+	map<int, set<int>> stateMachine;
+	set<int> nextState;
+	
+	nextState = { BLANK, POSTIVE, NEGATIVE, NUMBER, POINT };
+	stateMachine[START] = nextState;
+
+	nextState.clear();
+	nextState = { BLANK, POSTIVE, NEGATIVE, NUMBER, POINT};
+	stateMachine[BLANK] = nextState;
+
+	nextState.clear();
+	nextState = { BLANK, END };
+	stateMachine[BLANK2] = nextState;
+
+	nextState.clear();
+	nextState = {NUMBER, POINT};
+	stateMachine[POSTIVE] = nextState;
+	stateMachine[NEGATIVE] = nextState;
+
+	nextState.clear();
+	nextState = { NUMBER, POINT, E, BLANK, END };
+	stateMachine[NUMBER] = nextState;
+	
+	nextState.clear();
+	nextState = { BLANK, NUMBER, E, END };
+	stateMachine[POINT] = nextState;
+
+	nextState.clear();
+	nextState = {NUMBER};
+	stateMachine[POINT2] = nextState;
+	
+	nextState.clear();
+	nextState = { NUMBER, POSTIVE, NEGATIVE };
+	stateMachine[E] = nextState;
+
+	int state;
+	int preState = START;
+	int index = 0;
+
+	while (1)
+	{
+		if (charMap.find(s[index]) != charMap.end())
+			state = charMap[s[index]];
+		else
+			flag = false;
+
+		if (stateMachine[preState].find(state) == stateMachine[preState].end())
+			flag = false;
+
+		if (!flag)
+			break;
+
+	
+		if (state == POINT)
+		{
+			if (pointFlag)
+				flag = false;
+			else
+			{
+				pointFlag = true;
+				if (preState != NUMBER)
+					state = POINT2;
+			}
+		}
+		else if (state == E)
+		{
+			if (eFlag)
+				flag = false;
+			else
+				eFlag = true;
+			pointFlag = true;
+		}
+		else if (state == BLANK)
+		{
+			if (preState == BLANK2 || (preState != BLANK && preState != START))
+				state = BLANK2;
+		}
+	
+		preState = state;
+		index++;
+		if (state == END)
+			break;
+	}
+	
+	return flag;
+}
+

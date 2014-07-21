@@ -1,0 +1,58 @@
+Given inorder and postorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+
+找到root位置，递归处理左子树序列和右子树序列。
+
+TreeNode* BinaryTree::buildTree2(vector<int>& inorder, vector<int>& postorder)
+{
+	int len = inorder.size();
+	if (len == 0)
+		return NULL;
+
+	return buildTreeInPostOrder(inorder, 0, len - 1, postorder, 0, len - 1);
+}
+
+TreeNode* BinaryTree::buildTreeInPostOrder(vector<int>& inorder,
+										   int startI,
+										   int endI,
+										   vector<int>& postorder,
+										   int startP,
+										   int endP)
+{
+	if (startI > endI)
+		return NULL;
+
+	int rootVal = postorder[endP];
+	int pivotIndex = -1;
+	for (int i = startI; i <= endI; i++)
+	{
+		if (rootVal == inorder[i])
+		{
+			pivotIndex = i;
+			break;
+		}
+	}
+
+	TreeNode* leftTree = buildTreeInPostOrder(
+		inorder,
+		startI,
+		pivotIndex - 1,
+		postorder,
+		startP,
+		startP + pivotIndex - startI - 1);
+
+	TreeNode* rightTree = buildTreeInPostOrder(
+		inorder,
+		pivotIndex + 1,
+		endI,
+		postorder,
+		startP + pivotIndex - startI,
+		endP - 1);
+
+	TreeNode* root = new TreeNode(rootVal);
+	root->left = leftTree;
+	root->right = rightTree;
+	return root;
+}

@@ -1,0 +1,41 @@
+Given a binary tree, find its maximum depth.
+
+The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+广度优先遍历。
+
+int BinaryTree::maxDepth(TreeNode* root)
+{
+	if (root == NULL)
+		return 0;
+
+	queue<TreeNode*> Q;
+	TreeNode* node;
+
+	int count = 0;
+	int levelMax = 1;
+	int level = 0;
+	Q.push(root);
+
+	while (!Q.empty())
+	{
+		node = Q.front();
+		Q.pop();
+
+		if (count == 0)
+			level++;
+
+		if (node->left)
+			Q.push(node->left);
+		if (node->right)
+			Q.push(node->right);
+
+		count++;
+		if (count == levelMax)
+		{
+			count = 0;
+			levelMax = Q.size();
+		}
+	}
+	return level;
+}

@@ -1,0 +1,42 @@
+A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+
+The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+
+How many possible unique paths are there?
+
+
+Above is a 3 x 7 grid. How many possible unique paths are there?
+
+Note: m and n will be at most 100.
+
+机器人从2D矩阵的左上角走到右下角，只能向右或者向下，问有多少条路径。
+
+动归问题。设定w（i，j）为从（i，j）出发到右下角共有多少条路径，则w（i，j） = w（i+1，j）+w（i，j+1）。
+
+int Matrix::uniquePaths(int m, int n)
+{
+	if (m == 0 || n == 0)
+		return 0;
+	
+	vector<vector<int>> w;
+	for (int i = 0; i < m; i++)
+	{
+		vector<int> row(n);
+		w.push_back(row);
+	}
+
+	for (int i = m - 1; i >= 0; i--)
+		w[i][n - 1] = 1;
+	for (int i = n - 1; i >= 0; i--)
+		w[m - 1][i] = 1;
+
+	for (int i = m - 2; i >= 0; i--)
+	{
+		for (int j = n - 2; j >= 0; j--)
+		{
+			w[i][j] = w[i + 1][j] + w[i][j + 1];
+		}
+	}
+	
+	return w[0][0];
+}

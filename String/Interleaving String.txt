@@ -1,0 +1,76 @@
+Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
+
+For example,
+Given:
+s1 = "aabcc",
+s2 = "dbbca",
+
+When s3 = "aadbbcbcac", return true.
+When s3 = "aadbbbaccc", return false.
+
+和之前我想的一样是动态规划，但是我不能很好的总结。。。
+
+设f[i][j]表示s1[0-i]，s[0-j]匹配s3[0, i + j]的情况，则
+f[i][j] = (s1[i - 1] == s3[i + j - 1] && f[i - 1][j]) ||
+		  (s2[j - 1] == s3[i + j - 1] && f[i][j - 1])
+		  
+		  
+bool String::isInterleave(string s1, string s2, string s3)
+{
+	int s1Len = s1.length();
+	int s2Len = s2.length();
+	int s3Len = s3.length();
+
+	if (s3.length() != s1.length() + s2.length())
+		return false;
+
+	vector<vector<int>> f;
+
+	for (int i = 0; i < s1Len + 1; i++)
+		f.push_back(vector<int>(s2Len + 1));
+
+	f[0][0] = 1;
+
+	for (int i = 0; i <= s1Len; i++)
+	{
+		for (int j = 0; j <= s2Len; j++)
+		{
+			f[i][j] = (i > 0 && (s1[i - 1] == s3[i + j - 1]) && f[i - 1][j]) ||
+					  (j > 0 && (s2[j - 1] == s3[i + j - 1]) && f[i][j - 1]);
+			if (i == 0 && j == 0)
+				f[i][j] = 1;
+		}
+	}
+
+	return f[s1Len][s2Len];
+}
+
+数组的规模可以优化，实际上每次都只用到上一行的结果，f可以变成一维的。
+
+bool String::isInterleave2(string s1, string s2, string s3)
+{
+	int s1Len = s1.length();
+	int s2Len = s2.length();
+	int s3Len = s3.length();
+
+	if (s3.length() != s1.length() + s2.length())
+		return false;
+
+	vector<int> f(s2Len + 1);
+	
+	f[0] = 1;
+
+	for (int i = 0; i <= s1Len; i++)
+	{
+		for (int j = 0; j <= s2Len; j++)
+		{
+			f[j] = (i > 0 && (s1[i - 1] == s3[i + j - 1]) && f[j]) ||
+				(j > 0 && (s2[j - 1] == s3[i + j - 1]) && f[j - 1]);
+			if (i == 0 && j == 0)
+				f[j] = 1;
+		}
+	}
+
+	return f[s2Len];
+}
+		  

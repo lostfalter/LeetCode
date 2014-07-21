@@ -1,0 +1,44 @@
+Implement strStr().
+
+Returns a pointer to the first occurrence of needle in haystack, or null if needle is not part of haystack.
+
+暴力解法，没有使用KMP。
+
+char* String::strStr(char* haystack, char* needle)
+{
+	if (haystack == NULL || needle == NULL)
+		return NULL;
+
+	if (*needle == '\0')
+		return haystack;
+
+	int indexH = 0;
+	int indexN = 0;
+
+	bool flag = false;
+
+	while (haystack[indexH] != '\0')
+	{
+		if (haystack[indexH] == needle[indexN])
+		{
+			indexH++;
+			indexN++;
+			if (needle[indexN] == '\0')
+			{
+				flag = true;
+				break;
+			}
+		}
+		else
+		{
+			indexH -= indexN - 1;
+			indexN = 0;
+		}
+	}
+	
+	if (flag)
+		return haystack + indexH - indexN;
+	else
+		return NULL;
+}
+

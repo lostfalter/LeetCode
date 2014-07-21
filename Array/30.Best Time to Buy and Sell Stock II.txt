@@ -1,0 +1,27 @@
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+
+
+多笔交易的股票买卖问题。
+动态规划问题。
+我们定位关键变量是在某个时间点之前买卖股票能获取的最大利润。
+那假设今天的股票价格比昨天低，那今天之前买卖股票能获得的最大利益，肯定不会高于昨天。
+如果今天的股票价格比昨天高，那今天获得的最大利益，就是今天和昨天的利益差。 
+
+竟然一次通过，虽然是多笔交易，代码比一次交易更加简单。
+
+int Solution::maxProfit2(vector<int>& prices)
+{
+	int len = prices.size();
+	if (len <= 1)
+		return 0;
+
+	int max = 0;
+	for (int i = 1; i < len; i++)
+	{
+		if (prices[i] > prices[i - 1])
+			max += prices[i] - prices[i - 1];
+	}
+	return max;
+}

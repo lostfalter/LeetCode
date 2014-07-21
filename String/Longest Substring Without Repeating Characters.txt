@@ -1,0 +1,50 @@
+Given a string, find the length of the longest substring without repeating characters. 
+For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3. 
+For "bbbbb" the longest substring is "b", with the length of 1.
+
+
+找到最长的没有重复字符的子串。
+
+题解了假定了字符的集合限定于26个英文小写字母。
+复杂度应该是N2。
+另外学到了一个函数fill。。。
+
+果然字符串并没有假定合集只有26个英文字母。
+加大范围后通过。
+
+int String::lengthOfLongestSubstring(string s)
+{
+	int len = s.length();
+	if (len == 1)
+		return 1;
+	
+	int max = 0;
+
+	vector<int> last(256);
+	fill(last.begin(), last.end(), -1);
+
+	int substringLen = 0;
+
+	for (int i = 0; i < len; i++)
+	{
+		if (last[s[i]] == -1)
+		{
+			last[s[i]] = i;
+			substringLen++;
+		}
+		else
+		{
+			if (substringLen > max)
+				max = substringLen;
+			i = last[s[i]];
+			fill(last.begin(), last.end(), -1);
+			substringLen = 0;
+		}
+	}
+	
+	if (substringLen > max)
+		max = substringLen;
+
+	return max;
+
+}

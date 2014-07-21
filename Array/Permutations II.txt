@@ -1,0 +1,10 @@
+Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+
+For example,
+[1,1,2] have the following unique permutations:
+[1,1,2], [1,2,1], and [2,1,1].
+
+好像最简单的方法就是把结果先放在set里。。。
+
+但是超时了。
+

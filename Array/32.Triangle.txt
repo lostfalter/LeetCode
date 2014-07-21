@@ -1,0 +1,118 @@
+Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+
+For example, given the following triangle
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+
+Note:
+Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
+
+获取从顶至底路径的最小值。
+每一次下移要移动到相邻的格子。
+以x,y标记的话，就是每一次y+1，x不变或者x+1。
+
+题目说o(n)的额外空间，说明应该是深度优先遍历。
+可以利用前面遍历的和来剪枝。
+
+注意只有一行的情况。
+叶子节点的值可能是负的，不要提前剪枝。
+
+又Time Limit Exceeded了。
+考虑优化下算法。
+有一些路径是会被重复用到的，如例图，5会被3和4用到。
+还一种想法是一开始就有的，从底至顶进行计算。
+
+int Solution::minimumTotal(vector<vector<int>>& triangle)
+{
+	int maxRow = triangle.size();
+	if (maxRow == 0)
+		return 0;
+	if (maxRow == 1)
+		return triangle[0][0];
+	
+	int currentSum = 0;
+	vector<int> sum(maxRow);
+	vector<int> index(maxRow);
+	vector<int> increment(maxRow);
+
+	sum[0] = triangle[0][0];
+
+	int minSum = INT_MAX;
+	int row = 1;
+	int x = 0;
+	
+	int count = 0;
+	while (row < maxRow)
+	{
+		if (row == 0)
+			break;
+		if (increment[row] == 2)
+		{
+			increment[row] = 0;
+			row--;
+			continue;
+		}
+		index[row] = index[row - 1] + increment[row];
+		increment[row]++;
+		currentSum = sum[row - 1] + triangle[row][index[row]];
+		
+		if (row < maxRow - 1 && increment[row + 1] == 0 && index[row] > 0 && currentSum > sum[row])
+			increment[row + 1]++;
+
+		count++;
+
+		if (row == maxRow - 1)
+		{
+			if (currentSum < minSum)
+				minSum = currentSum;
+			
+			continue;
+		}
+		sum[row] = currentSum;
+		row++;
+
+	}
+	cout << count << endl;
+	return minSum;
+}
+
+还是去看看正确的答案吧。
+
+剪枝的策略和我相同，不过剪枝不太正确，应该是状态转移方程。
+另外确实是从底向上，具体的原因我看的不是很清楚。
+
+int Solution::minimumTotal(vector<vector<int>>& triangle)
+{
+	int maxRow = triangle.size();
+	if (maxRow == 0)
+		return 0;
+	if (maxRow == 1)
+		return triangle[0][0];
+	
+
+	vector<int> minPath(maxRow);
+
+	for (int i = 0; i < maxRow; i++)
+		minPath[i] = triangle[maxRow - 1][i];
+
+	int row = maxRow - 2;
+	
+	while (row >= 0)
+	{
+		for (int i = 0; i <= row; i++)
+			minPath[i] = (minPath[i] > minPath[i + 1] ? minPath[i + 1] : minPath[i]) 
+						+ triangle[row][i];
+		row--;
+	}
+	
+	return minPath[0];
+}
+
+我之前想错了，最后一行不是2的row次方个，而是row个，刚好是o(n)。
+从最后一行不断往上走就好了。
+当然这些都不是我的独立思考。

@@ -1,0 +1,58 @@
+Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
+
+You have the following 3 operations permitted on a word:
+
+a) Insert a character
+b) Delete a character
+c) Replace a character
+
+没有思路，直接阅读答案。
+
+参考
+http://web.stanford.edu/class/cs124/lec/med.pdf
+
+一个等号引发的悲剧，调试了好久，一直wa。
+
+int String::minDistance(string word1, string word2)
+{
+	int n = word1.length();
+	int m = word2.length();
+	if (n == 0)
+		return m;
+	else if (m == 0)
+		return n;
+
+	vector<vector<int>> D;
+	for (int i = 0; i < n + 1; i++)
+	{
+		vector<int> row(m + 1);
+		D.push_back(row);
+	}
+
+	for (int i = 0; i <= m; i++)
+		D[0][i] = i;
+	for (int i = 0; i <= n; i++)
+		D[i][0] = i;
+
+	int d1, d2, d3;
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= m; j++)
+		{
+			d1 = D[i - 1][j] + 1;
+			d2 = D[i][j - 1] + 1;
+			d3 = D[i - 1][j - 1];
+			if (word1[i - 1] != word2[j - 1])
+				d3++;
+
+			if (d3 < d2)
+				d2 = d3;
+			if (d2 < d1)
+				d1 = d2;
+			
+			D[i][j] = d1;
+		}
+	}
+
+	return D[n][m];
+}

@@ -1,0 +1,66 @@
+Given a singly linked list L: L0→L1→…→Ln-1→Ln,
+reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+You must do this in-place without altering the nodes' values.
+
+For example,
+Given {1,2,3,4}, reorder it to {1,4,2,3}.
+
+重排链表，微软笔试题目
+
+先将链表拆成前后两半，然后将后半链表插入前半部分的链表。
+
+//链表重排
+void LinkedList::reorderList(ListNode* head)
+{
+	if (head == NULL || head->next == NULL)
+		return;
+	ListNode* fast = head;
+	ListNode* slow = head;
+	while (fast)
+	{
+		fast = fast->next;
+		if (fast)
+			fast = fast->next;
+		else
+			break;
+		slow = slow->next;
+	}
+	ListNode* node;
+	ListNode* l1 = head;
+	ListNode* l2 = slow->next;
+	slow->next = NULL;
+
+	l2 = reverseList(l2);
+
+	while (l2)
+	{
+		node = l1;
+		l1 = l1->next;
+		node->next = l2;
+		l2 = l2->next;
+		node->next->next = l1;
+	}
+	
+}
+//倒转链表
+ListNode* LinkedList::reverseList(ListNode* head)
+{
+	if (head == NULL || head->next == NULL)
+		return head;
+	ListNode* newHead = NULL;
+	ListNode* node = head->next;
+	ListNode* preNode = head;
+	ListNode* postNode = node->next;
+	
+	preNode->next = NULL;
+	
+	while (node)
+	{
+		postNode = node->next;
+		node->next = preNode;
+		preNode = node;
+		node = postNode;
+	}
+	return preNode;
+}

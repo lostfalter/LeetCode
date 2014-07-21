@@ -1,0 +1,55 @@
+Given a binary tree, find the maximum path sum.
+
+The path may start and end at any node in the tree.
+
+For example:
+Given the below binary tree,
+
+       1
+      / \
+     2   3
+Return 6.
+
+应该要注意节点的值可能是负数。
+说是树，但是根据遍历的方向任意，所以应该看成是图。
+简单的思路是从每一点出发寻找最大的路径和。
+
+不过还是看题解了，用递归和最大字段和的思想来做。
+
+int BinaryTree::maxPathSum(TreeNode* root)
+{
+	if (root == NULL)
+		return 0;
+
+	int maxSum = INT_MIN;
+	dfs(root, maxSum);
+	return maxSum;
+}
+
+int BinaryTree::dfs(TreeNode* root, int& maxSum)
+{
+	if (root == NULL)
+		return 0;
+
+	int sum = root->val;
+	int leftSum = dfs(root->left, maxSum);
+	int rightSum = dfs(root->right, maxSum);
+
+	if (leftSum > 0)
+		sum += leftSum;
+	if (rightSum > 0)
+		sum += rightSum;
+
+	if (sum > maxSum)
+		maxSum = sum;
+
+	if (leftSum < 0 && rightSum < 0)
+		return root->val;
+	else if (leftSum > rightSum)
+		return leftSum + root->val;
+	else
+		return rightSum + root->val;
+}
+
+然后写一个非递归的版本。算了，太麻烦了，不写了。	
+

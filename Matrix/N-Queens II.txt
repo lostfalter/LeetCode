@@ -1,0 +1,68 @@
+Follow up for N-Queens problem.
+
+Now, instead outputting board configurations, return the total number of distinct solutions.
+
+N皇后，只输出解的个数。
+
+我怀疑这里有用数学公式算的方法。
+
+
+
+int Matrix::totalNQueens(int n)
+{
+	int total = 0;
+	if (n == 0)
+		return total;
+
+	vector<int> col(n);
+	int k = 0;
+	while (k >= 0)
+	{
+		if (col[k] >= n)
+		{
+			col[k] = 0;
+			k--;
+			if (k >= 0)
+				col[k]++;
+			continue;
+		}
+
+		if (!vaildQueen(col, k))
+		{
+			col[k]++;
+		}
+		else
+		{
+			if (k == n - 1)
+			{
+				total++;
+
+				col[k] = 0;
+				k--;
+				if (k >= 0)
+					col[k]++;
+			}
+			else
+			{
+				k++;
+			}
+		}
+	}
+	return total;
+}
+
+
+bool Matrix::vaildQueen(vector<int>& col, int k)
+{
+	if (k == 0)
+		return true;
+
+	for (int i = 0; i < k; i++)
+	{
+		if (col[i] == col[k] ||
+			col[i] + i == col[k] + k ||
+			col[i] - i == col[k] - k)
+			return false;
+	}
+	return true;
+}

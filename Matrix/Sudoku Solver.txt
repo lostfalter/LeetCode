@@ -1,0 +1,124 @@
+Write a program to solve a Sudoku puzzle by filling the empty cells.
+
+Empty cells are indicated by the character '.'.
+
+You may assume that there will be only one unique solution. 
+
+
+
+
+A sudoku puzzle...
+
+
+
+
+
+...and its solution numbers marked in red. 
+
+
+一开始我通过判断行，列，小格子来减少一个格子取数的区间，结果思路很混乱。
+看了别人的解法，好像都是暴力搜索。
+自己写了一个，竟然还通过了。我原以为整个空间太大了，复杂度太高。。。
+
+void Matrix::solveSudoku(vector<vector<char>>& board)
+{
+	vector<vector<vector<int>>> state;
+
+	vector<int> initial(9);
+	for (int i = 0; i < 9; i++)
+		initial[i] = i + 1;
+
+	vector<Point> undetermined;
+
+	for (int row = 0; row < 9; row++)
+	{
+		for (int col = 0; col < 9; col++)
+		{
+			if (board[row][col] == '.')
+			{
+				undetermined.push_back(Point(row, col));
+			}
+		}
+	}
+
+	int len = undetermined.size();
+	vector<char> numList(len);
+	for (int i = 0; i < len; i++)
+		numList[i] = '1';
+	int k = 0;
+	int x;
+	int y;
+	while (k >= 0)
+	{
+		x = undetermined[k].x;
+		y = undetermined[k].y;
+	
+		if (numList[k] > '9')
+		{
+			numList[k] = '1';
+			board[x][y] = '.';
+				k--;
+			if (k >= 0)
+				numList[k]++;
+			continue;
+		}
+		board[x][y] = numList[k];
+		if (isVaild(board, x, y))
+		{
+			if (k == len - 1)
+				return;
+			
+			k++;
+		}
+		else
+		{
+			numList[k]++;
+		}
+	}
+}
+
+bool Matrix::isVaild(vector<vector<char>>& board, int row, int col)
+{
+	vector<int> rowTest(10);
+	vector<int> colTest(10);
+	for (int i = 0; i < 9; i++)
+	{
+		if (board[row][i] == '.')
+			continue;
+
+		if (rowTest[board[row][i] - '0'])
+			return false;
+		else
+			rowTest[board[row][i] - '0'] = 1;
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		if (board[i][col] == '.')
+			continue;
+
+		if (colTest[board[i][col] - '0'])
+			return false;
+		else
+			colTest[board[i][col] - '0'] = 1;
+	}
+
+	int startRow = row / 3 * 3;
+	int startCol = col / 3 * 3;
+
+	vector<int> gridTest(10);
+	for (int row = 0; row < 3; row++)
+	{
+		for (int col = 0; col < 3; col++)
+		{
+			if (board[startRow + row][startCol + col] == '.')
+				continue;
+
+			if (gridTest[board[startRow + row][startCol + col] - '0'])
+				return false;
+			else
+				gridTest[board[startRow + row][startCol + col] - '0'] = 1;
+		}
+	}
+	return true;
+}

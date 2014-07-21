@@ -1,0 +1,36 @@
+Follow up for "Remove Duplicates":
+What if duplicates are allowed at most twice?
+
+For example,
+Given sorted array A = [1,1,1,2,2,3],
+
+Your function should return length = 5, and A is now [1,1,2,2,3].
+
+稍微在加一些计数条件就可以了。
+
+int Solution::removeDuplicates2(int A[], int n)
+{
+	if (A == NULL || n <= 2)
+		return n;
+	int extra = 0;
+	int same = 0;
+	for (int i = 1; i < n; i++)
+	{
+		if (A[i] == A[i - 1])
+		{
+			if (same)
+				extra++;
+			else
+			{
+				same = 1;
+				A[i - extra] = A[i];
+			}
+		}
+		else
+		{
+			same = 0;
+			A[i - extra] = A[i];
+		}
+	}
+	return n - extra;
+}

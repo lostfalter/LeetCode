@@ -1,0 +1,91 @@
+Given a string s and a dictionary of words dict, add spaces in s to construct a sentence where each word is a valid dictionary word.
+
+Return all such possible sentences.
+
+For example, given
+s = "catsanddog",
+dict = ["cat", "cats", "and", "sand", "dog"].
+
+A solution is ["cats and dog", "cat sand dog"].
+
+和word break相似，但是需要记录具体的分词，题目似乎暗示句子一定可以分词。
+动归，需要清楚的知道动归的是什么，并且每个index的含义必须清楚，不然容易下标弄乱。
+结果表明，句子不一定是可分词的，注意输出的字符串的空格控制。
+
+vector<string> String::wordBreak2(string s, unordered_set<string>& dict)
+{
+	int len = s.length();
+
+	bool* can = new bool[len + 1];
+	can[0] = true;
+	bool flag;
+	for (int i = 0; i < len; i++)
+	{
+		flag = false;
+		for (int j = i; j >= 0; j--)
+		{
+			if (can[j] && dict.find(s.substr(j, i - j + 1)) != dict.end())
+			{
+				flag = true;
+				break;
+			}
+		}
+		can[i + 1] = flag;
+	}
+
+	vector<vector<int>> indexTable(len + 1);
+	for (int i = 0; i < len; i++)
+	{
+		for (int j = i; j >= 0; j--)
+		{
+			if (can[j] && dict.find(s.substr(j, i - j + 1)) != dict.end())
+			{
+				indexTable[j].push_back(i + 1);
+			}
+		}
+	}
+	vector<int> indexList;
+	vector<string> resultList;
+	if (can[len] == false)
+		return resultList;
+
+	getWordBreak(indexTable, 0, indexList, s, resultList);
+	return resultList;
+	
+	
+
+}
+
+void String::getWordBreak(vector<vector<int>>& can, int index, vector<int>& indexList, string& s, vector<string>& resultList)
+{
+	if (index == can.size() - 1)
+	{
+		string newStr;
+		int pre = 0;
+		bool first = true;
+		for (auto it = indexList.begin(); it != indexList.end(); it++)
+		{
+			if (first)
+			{
+				newStr.append(s.substr(pre, *it - pre));
+				first = false;
+			}
+			else
+			{
+				newStr.append(" " + s.substr(pre, *it - pre));
+			}
+			pre = *it;
+		}
+		newStr.append(s.substr(pre, index - pre));
+		resultList.push_back(newStr);
+		return;
+	}
+	
+	for (auto it = can[index].begin(); it != can[index].end(); it++)
+	{
+		indexList.push_back(*it);
+		getWordBreak(can, *it, indexList, s, resultList);
+		indexList.pop_back();
+	}
+
+}

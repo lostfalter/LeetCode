@@ -1,0 +1,36 @@
+Given a string S and a string T, count the number of distinct subsequences of T in S.
+
+A subsequence of a string is a new string which is formed from the original string by 
+deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters.
+(ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
+
+Here is an example:
+S = "rabbbit", T = "rabbit"
+
+Return 3.
+
+看了网上的解释，才明白题意。
+S中删掉几个字符之后形成的子串中，有多少个和T相同。
+题例中，S分别删掉3个b中的一个，都可以形成子串rabbit，和T相同，所以返回3。
+
+按题解，f[i][j] 表示S[0...i]中T[0-j]的个数，若s[i] == t[j],f[i][j] = f[i - 1][j] + f[i-1][j-1]，
+否则f[i][j] = f[i - 1][j]。利用动态规划和滚动数组，可得以下代码。
+
+int String::numDistinct(string S, string T)
+{
+	int tLen = T.length();
+	int sLen = S.length();
+	vector<int> f(tLen + 1);
+	f[0] = 1;
+	
+	for (int i = 0; i < sLen; i++)
+	{
+		for (int j = tLen; j >= 1; j--)
+		{
+			if (S[i] == T[j - 1])
+				f[j] += f[j - 1];
+		}
+	}
+	return f[tLen];
+}
+

@@ -1,0 +1,78 @@
+Determine if a Sudoku is valid, according to: Sudoku Puzzles - The Rules.
+
+The Sudoku board could be partially filled, where empty cells are filled with the character '.'.
+
+
+A partially filled sudoku which is valid.
+
+Note:
+A valid Sudoku board (partially filled) is not necessarily solvable. Only the filled cells need to be validated.
+
+检验数独是否正确，没填完的话，只要检验填过的部分就可以了。
+
+bool Matrix::isValidSudoku(vector<vector<char>>& board)
+{
+	//check row;
+	for (int row = 0; row < 9; row++)
+	{
+		vector<int> testLine(10);
+		for (int col = 0; col < 9; col++)
+		{
+			if (board[row][col] == '.')
+				continue;
+
+			if (testLine[board[row][col] - '0'])
+			{
+				return false;
+			}
+			else
+				testLine[board[row][col] - '0'] = 1;
+		}
+		
+	}
+
+
+	//check column
+	for (int col = 0; col < 9; col++)
+	{
+		vector<int> testLine(10);
+		for (int row = 0; row < 9; row++)
+		{
+			if (board[row][col] == '.')
+				continue;
+
+			if (testLine[board[row][col] - '0'])
+			{
+				return false;
+			}
+			else
+				testLine[board[row][col] - '0'] = 1;
+		}
+	}
+
+	//check small box
+	for (int row = 0; row < 9; row += 3)
+	{
+		for (int col = 0; col < 9; col += 3)
+		{
+			vector<int> testLine(10);
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if (board[row + i][col + j] == '.')
+						continue;
+
+					if (testLine[board[row + i][col + j] - '0'])
+					{
+						return false;
+					}
+					else
+						testLine[board[row + i][col + j] - '0'] = 1;
+				}
+			}
+		}
+	}
+
+	return true;
+}

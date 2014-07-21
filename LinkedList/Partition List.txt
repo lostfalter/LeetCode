@@ -1,0 +1,53 @@
+Given a linked list and a value x, partition it such that all nodes less than x come before nodes greater than or equal to x.
+
+You should preserve the original relative order of the nodes in each of the two partitions.
+
+For example,
+Given 1->4->3->2->5->2 and x = 3,
+return 1->2->2->4->3->5.
+
+将链表分为两部分，使得大于等于x的节点在小于x的节点后面。
+两部分的节点相对顺序保持不变。
+
+这有点像快速排序的分割部分。
+
+先把大于等于X的部分摘下，串在一起，然后在接回去。
+
+ListNode* LinkedList::partition(ListNode* head, int x)
+{
+	if (head == NULL || head->next == NULL)
+		return head;
+
+	ListNode* smallHead = new ListNode(-1);
+	smallHead->next = head;
+
+	ListNode* largeHead = new ListNode(-1);
+	ListNode* preLargeNode = largeHead;
+
+	ListNode* p = head;
+	ListNode* preSmallNode = smallHead;
+	while (p)
+	{
+		if (p->val < x)
+		{
+			preSmallNode = p;
+			p = p->next;
+		}
+		else
+		{
+			preLargeNode->next = p;
+			preLargeNode = p;
+			preSmallNode->next = p->next;
+			p = p->next;
+		}
+	}
+
+	preSmallNode->next = largeHead->next;
+	preLargeNode->next = NULL;
+
+	head = smallHead->next;
+	delete smallHead;
+	delete largeHead;
+
+	return head;
+}

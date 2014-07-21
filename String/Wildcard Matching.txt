@@ -1,0 +1,73 @@
+Implement wildcard pattern matching with support for '?' and '*'.
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "*") → true
+isMatch("aa", "a*") → true
+isMatch("ab", "?*") → true
+isMatch("aab", "c*a*b") → false
+
+原来和regular expression match 是两题。两题中的*意思是不同的。
+
+这题需要跳过连续的*，另外递归版会超时。
+
+bool String::wildcardMatch(const char* s, const char* p)
+{
+	const char* str = s;
+	const char* ptr = p;
+	bool star = false;
+	const char* starP = NULL;
+	const char* starS = NULL;
+
+	while (*str != '\0')
+	{
+		switch (*ptr)
+		{
+		case '?':
+			ptr++;
+			str++;
+			break;
+		case '*':
+			star = true;
+			starS = str;
+			starP = ptr;
+			while (*starP == '*')
+				starP++;
+			if (*starP == '\0')
+				return true;
+			str = starS;
+			ptr = starP;
+
+			break;
+		default:
+			if (*str != *ptr)
+			{
+				if (!star)
+					return false;
+				starS++;
+				str = starS;
+				ptr = starP;
+			}
+			else
+			{
+				str++;
+				ptr++;
+			}
+		}
+		
+	}
+
+	while (*ptr == '*')
+		ptr++;
+	return *ptr == '\0';
+}

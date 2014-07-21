@@ -1,0 +1,60 @@
+Follow up for problem "Populating Next Right Pointers in Each Node".
+
+What if the given tree could be any binary tree? Would your previous solution still work?
+
+Note:
+
+You may only use constant extra space.
+For example,
+Given the following binary tree,
+         1
+       /  \
+      2    3
+     / \    \
+    4   5    7
+After calling your function, the tree should look like:
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \    \
+    4-> 5 -> 7 -> NULL
+	
+和上一题一样使用广度优先遍历，因为我的代码本来就没假定树是满二叉树，所以一样可用。
+
+void BinaryTree::connect(TreeLinkNode* root)
+{
+	if (root == NULL)
+		return;
+
+	queue<TreeLinkNode*> Q;
+	int count = 0;
+	int levelMax = 1;
+	TreeLinkNode* pre = NULL;
+	TreeLinkNode* p = NULL;
+
+	Q.push(root);
+
+	while (!Q.empty())
+	{
+		p = Q.front();
+		Q.pop();
+
+		if (count > 0)
+			pre->next = p;
+		
+		pre = p;
+
+		if (p->left)
+			Q.push(p->left);
+		if (p->right)
+			Q.push(p->right);
+
+		count++;
+		if (count == levelMax)
+		{
+			count = 0;
+			levelMax = Q.size();
+			p->next = NULL;
+		}
+	}
+}

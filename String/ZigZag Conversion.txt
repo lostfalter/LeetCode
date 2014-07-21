@@ -1,0 +1,63 @@
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of rows:
+
+string convert(string text, int nRows);
+convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
+
+看了别人写的题意示意图才发现之前的题意理解是错的。不过我写的也不是算法，只是模仿代码生成的过程。效率很差。
+
+
+string String::convert(string s, int nRows)
+{
+	int len = s.length();
+	if (len <= 1 || nRows == 1)
+		return s;
+
+	int nColumn = 0;
+	int temp = len / (2 * nRows - 2); 
+	nColumn += temp * (nRows - 1);
+	if ((len - temp * (2 * nRows - 2)))
+		nColumn++;
+	if ((len - temp * (2 * nRows - 2)) / nRows)
+	{
+		nColumn += (len - temp * (2 * nRows - 2)) - nRows;
+	}
+
+	
+	vector<vector<char>> m;
+	for (int i = 0; i < nRows; i++)
+	{
+		vector<char> row(nColumn, '\0');
+		m.push_back(row);
+	}
+
+	int index = 0;
+	int col = 0;
+	while (index < len)
+	{
+		for (int i = 0; index < len && i < nRows; i++)
+			m[i][col] = s[index++];
+		col++;
+		for (int i = nRows - 2; index < len && i >= 1; i--)
+			m[i][col++] = s[index++];
+	}
+
+	string result;
+	for (int i = 0; i < nRows; i++)
+	{
+		for (int j = 0; j < nColumn; j++)
+		{
+			if (m[i][j] != '\0')
+				result.push_back(m[i][j]);
+		}
+	}
+
+	return result;
+
+}
+

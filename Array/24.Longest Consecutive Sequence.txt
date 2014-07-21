@@ -1,0 +1,15 @@
+Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+
+Your algorithm should run in O(n) complexity.
+
+在无序的数组中寻找最长的连续数字串。
+
+初步的想法就是先排序，然后找。
+排序是nlogn，找应该是n的复杂度。
+找应该可以优化复杂度，可以用二叉查找，那么可以是logn的查找。
+
+注意考虑相同数字的情况。

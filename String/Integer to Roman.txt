@@ -1,0 +1,67 @@
+Given an integer, convert it to a roman numeral.
+
+Input is guaranteed to be within the range from 1 to 3999.
+
+将整型转换成罗马数字。
+
+string String::intToRoman(int num)
+{
+	vector<int> step = {1000, 500, 100, 50, 10, 5, 1};
+	vector<char> romanNumber = { 'M', 'D', 'C', 'L', 'X', 'V', 'I' };
+	
+	int temp;
+	int index = 0;
+	string roman;
+	while (num)
+	{
+		if (index % 2)
+		{
+			temp = num / step[index + 1];
+			if (num / step[index])
+			{
+				if (temp == 9)
+				{
+					roman.push_back(romanNumber[index + 1]);
+					roman.push_back(romanNumber[index - 1]);
+				}
+				else
+				{
+					roman.push_back(romanNumber[index]);
+					for (int i = 0; i < temp - 5; i++)
+					{
+						roman.push_back(romanNumber[index + 1]);
+					}
+				}
+			}
+			else
+			{
+				if (temp == 4)
+				{
+					roman.push_back(romanNumber[index + 1]);
+					roman.push_back(romanNumber[index]);
+				}
+				else
+				{
+					for (int i = 0; i < temp; i++)
+					{
+						roman.push_back(romanNumber[index + 1]);
+					}
+				}
+			}
+			
+			num -= temp * step[index + 1];
+			index += 2;
+		}
+		else
+		{
+			temp = num / step[index];
+			num -= temp * step[index];
+			for (int i = 0; i < temp; i++)
+			{
+				roman.push_back(romanNumber[index]);
+			}
+			index++;
+		}
+	}
+	return roman;
+}

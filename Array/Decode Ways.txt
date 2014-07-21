@@ -1,0 +1,60 @@
+A message containing letters from A-Z is being encoded to numbers using the following mapping:
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+Given an encoded message containing digits, determine the total number of ways to decode it.
+
+For example,
+Given encoded message "12", it could be decoded as "AB" (1 2) or "L" (12).
+
+The number of ways decoding "12" is 2.
+
+问解码的种类数，有意思的一道题目。
+
+N位数的种类和N-1位数的种类有关系。
+如果N-1位数有X种解码方法，那第N位数可能会和第N-1位数组成第X+1种解法。
+
+关键是对于0的考虑。
+我想先把10 20 找出来，把原字符串分成几个部分，重新求解。
+不过应该不靠谱，还是看看别人的答案吧。
+
+竟然很少人讨论。。。
+那还是我自己解吧。
+分开肯定是能做的，不过我感觉那样不好，还是合在一起考虑吧。
+
+想到可以用广度优先搜索的方式来解决这个问题。
+
+用队列进行搜索会超时。
+改用计数标记，减少了队列中重复元素的遍历。
+
+
+int Solution::numDecodings(string s)
+{
+	int len = s.length();
+	if (len == 0)
+		return 0;
+
+	vector<int> count(len + 1);
+
+	count[0] = 1;
+	
+	for (int i = 0; i < len; i++)
+	{
+		if (count[i] == 0)
+			continue;
+		if (s[i] <= '0' || s[i] > '9')
+			continue;
+		if (s[i] == '1' || s[i] == '2')
+		{
+			if (s[i] == '1' && i + 1 < len && s[i + 1] <= '9' && s[i + 1] >= '0')
+				count[i + 2] += count[i];
+			else if (s[i] == '2' && i + 1 < len && s[i + 1] <= '6' && s[i + 1] >= '0')
+				count[i + 2] += count[i];
+		}
+		count[i + 1] += count[i];
+	}
+
+	return count[len];
+}

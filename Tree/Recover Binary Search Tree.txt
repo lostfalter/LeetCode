@@ -1,0 +1,15 @@
+Two elements of a binary search tree (BST) are swapped by mistake.
+
+Recover the tree without changing its structure.
+
+Note:
+A solution using O(n) space is pretty straight forward. Could you devise a constant space solution?
+confused what "{1,#,2,3}" means? > read more on how binary tree is serialized on OJ.
+
+完全不知道怎么做。
+即使是题目中所谓的straight forward方法。
+
+简单的方法是对二叉树进行中序遍历，把遍历到的节点指针放到数组中，然后从前往后和从后往前扫描数组，分别找到第一个逆序的元素，交换他们。
+
+题解中说到即使是中序遍历也要用到空间，可以用Morris中序遍历。。。
+

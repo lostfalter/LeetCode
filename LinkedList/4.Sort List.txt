@@ -1,0 +1,140 @@
+Sort a linked list in O(n log n) time using constant space complexity.
+
+以nlogn的时间复杂度排序一个链表，常数空间
+
+初步想到的是使用归并排序，预计时间复杂度是nlogn + n，使用常数空间。
+先遍历一个链表，将连续的两个节点都排好序，然后第二遍，排连续的4个节点，以此类推。
+
+具体做法是将待排序的两个链表段从原链表中拆下来进行合并排序，然后再放回去。
+这需要记录两个链表段的开头和结尾，方便取出和拿回去。
+
+另外归并排序，是将两两的链表段合并的过程，链表段的长度从1开始，不断的增加，
+从1到2到4到N，最大的步进必须小于链表的长度，所以为了获取链表长度，我们需要先遍历一遍链表获取链表长度。
+
+leetcode上的链表似乎是没有头结点的。
+由于我之前写的代码是有头结点的，所以在接受到链表头以后，我做了一个伪头部，方便下面的计算。
+
+ListNode* Solution::sortList(ListNode* head)
+{
+	ListNode* fHead = new ListNode(-1);	//伪头部
+	fHead->next = head;
+	head = fHead;
+	if (head == NULL || head->next == NULL)
+		return NULL;
+
+	int k = 1;	//排序步进
+
+	int len = 0;
+	ListNode* p = head->next;
+
+	while (p)
+	{
+		p = p->next;
+		len++;
+	}
+	
+	while (1)
+	{
+		ListNode* preNode = head;
+		ListNode* lastNode = head->next;
+		while (1)
+		{
+			ListNode* h1 = lastNode;
+			ListNode* h2;
+			ListNode* p1 = h1;
+			for (int i = 0; i < k - 1 && p1; i++)
+			{
+				p1 = p1->next;
+			}
+			if (p1 == NULL || p1->next == NULL)
+				break;
+
+			h2 = p1->next;
+			p1->next = NULL;
+
+			ListNode* p2 = h2;
+
+			for (int i = 0; i < k - 1 && p2; i++)
+			{
+				p2 = p2->next;
+			}
+
+			if (p2)
+			{
+				lastNode = p2->next;
+				p2->next = NULL;
+			}
+			else
+				lastNode = NULL;
+
+			preNode = mergeList(h1, h2, preNode);
+			preNode->next = lastNode;
+		}
+
+		k *= 2;
+		if (k >= len)
+			break;
+	}
+	head = head->next;
+	delete fHead;
+	return head;
+
+}
+//合并有序链表
+ListNode* Solution::mergeList(ListNode* h1, ListNode* h2, ListNode* preNode)
+{
+
+	if (h1 == NULL && h2 == NULL)
+		return NULL;
+	else if (h2 == NULL)
+		return h1;
+	else if (h1 == NULL)
+		return h2;
+
+	ListNode* lastNode;
+
+	if (h1->val < h2->val)
+	{
+		preNode->next = h1;
+		lastNode = h1;
+		h1 = h1->next;
+	}
+	else
+	{
+		preNode->next = h2;
+		lastNode = h2;
+		h2 = h2->next;
+	}
+
+	while (h1 && h2)
+	{
+		if (h1->val > h2->val)
+		{
+			lastNode->next = h2;
+			lastNode = h2;
+			h2 = h2->next;
+		}
+		else
+		{
+			lastNode->next = h1;
+			lastNode = h1;
+			h1 = h1->next;
+		}
+
+	}
+	while (h1)
+	{
+		lastNode->next = h1;
+		lastNode = h1;
+		h1 = h1->next;
+	}
+	while (h2)
+	{
+		lastNode->next = h2;
+		lastNode = h2;
+		h2 = h2->next;
+	}
+
+	lastNode->next = NULL;
+	return lastNode;
+}

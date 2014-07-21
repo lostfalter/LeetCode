@@ -1,0 +1,44 @@
+Given a collection of intervals, merge all overlapping intervals.
+
+For example,
+Given [1,3],[2,6],[8,10],[15,18],
+return [1,6],[8,10],[15,18].
+
+比较函数得是静态或者全局的。
+相邻的区间不用合并。
+
+bool Solution::intervalCmp(const Interval& a, const Interval& b)
+{ 
+	return a.start < b.start;
+}
+vector<Interval> Solution::merge(vector<Interval>& intervals)
+{
+	int len = intervals.size();
+	if (len <= 1)
+		return intervals;
+
+	sort(intervals.begin(), intervals.end(), intervalCmp);
+	
+	stack<Interval> s;
+	s.push(intervals[0]);
+	Interval interval;
+	for (int i = 1; i < len; i++)
+	{
+		if (intervals[i].start <= s.top().end)
+		{
+			if (intervals[i].end > s.top().end)
+				s.top().end = intervals[i].end;
+		}
+		else
+			s.push(intervals[i]);
+	}
+
+	vector<Interval> result;
+	while (!s.empty())
+	{
+		result.push_back(s.top());
+		s.pop();
+	}
+
+	return result;
+}
